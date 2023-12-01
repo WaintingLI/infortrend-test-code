@@ -1,0 +1,5 @@
+[2023-09-01 14:17:03] {log_sample.py:40} INFO - test
+[2023-09-01 14:17:03] {log_sample.py:41} INFO - test
+[2023-09-01 14:17:03] {log_sample.py:42} INFO - test
+[2023-09-01 14:17:03] {log_sample.py:43} INFO - test
+[2023-09-01 14:17:03] {log_sample.py:44} DEBUG - 213
