@@ -32,6 +32,12 @@ def click_button(a):
     driver.execute_script("arguments[0].scrollIntoView();", element)
     #透過Java Script來進行, element位置的點擊
     driver.execute_script("arguments[0].click();",element)
+    
+    #滾動到頂部
+    driver.execute_script("window.scrollTo(document.body.scrollHeight,0)")
+    
+    #滾動到底部
+    driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
 
 
 def check_element(driver,element,sec):
