@@ -60,11 +60,9 @@ def save_ini(file_path: str, section: str, option: str, value: str) -> None:
             new_datas.append(old_datas[index])
             continue
         #找尋相對應的Section
-        if string_meta[0] == "[":
+        if string_meta[0] == "[" and not section_find_flag:
             if string_meta[0:len(section)] == section:
                 section_find_flag =True
-            else:
-                section_find_flag = False
         else:
             if not section_find_flag:
                 new_datas.append(old_datas[index])
