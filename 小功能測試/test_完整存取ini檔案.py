@@ -1,12 +1,9 @@
 '''
-用來自動化測試Jira Software
+用來存檔ini檔案
 '''
-from time import sleep
 import sys
 import os
-import configparser
-import random
-#import clipboard
+
 
 
 
@@ -15,34 +12,11 @@ import random
 if os.path.dirname(sys.argv[0]):
     os.chdir(os.path.dirname(sys.argv[0]))
 
-#設定Chrome driver 的相關屬性
-options = webdriver.ChromeOptions()
-#options.add_argument('--headless')
-#options.add_argument("--disable-gpu")
-options.add_argument('ignore-certificate-errors')
-options.add_argument('disable-application-cache')
-#最大化窗口
-options.add_argument('--start-maximized')
-#options.add_argument('window-size=1600x900')
-#options.add_experimental_option('excludeSwitches', ['enable-automation'])
-options.add_experimental_option('excludeSwitches', ['enable-logging'])
-#driver_location='/usr/bin/chromedriver'
-#指令Chromedriver位置
-#BINARY_LOCATION='./chrome-win64/chrome.exe'
-#options.binary_location=BINARY_LOCATION
-#driver=webdriver.Chrome(executable_path=driver_location,chrome_options=options)
-#js="window.open('{}','_blank');"
-service = Service(executable_path="./chromedriver.exe")
 
-
-#啟動chrome
-#driver = webdriver.Chrome(service=service, options=options)
-#隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
-#driver.implicitly_wait(10)
 
 #讀取檔案參數與全域變數
-cf=configparser.ConfigParser()
-cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
+#cf=configparser.ConfigParser()
+#cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
 #JIRASOFWARE_IP = cf.get("APP_Info","JiraSoftware_ip")
 #ADMIN_USERNAME = cf.get("APP_Info","Admin_Username")
 #ADMIN_PASSWORD = cf.get("APP_Info","Admin_Password")
@@ -50,12 +24,12 @@ cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
 #獲取專案的名稱與設定
 #PROJECT_NAME = cf.get("Project","Project_Name")
 #PROJECT_KEY = cf.get("Project","Project_Key")
-test_datas=list()
-new_datas=list()
+
 
 def save_ini(file_path: str, section: str, option: str, value: str) -> None:
     """_summary_
-    用來存檔ini,且不移除註解,僅修改相對應的option值
+    用來存檔ini,且不移除註解,僅修改相對應的option值,每一次只能修改一個選項
+    ※如果沒有對應的section或option,將不會修改ini檔案
     Args:
         file_path (str): 要修改的ini檔案路徑
         section (str): ini檔案中的section(ex:[APP_Info])
@@ -64,7 +38,11 @@ def save_ini(file_path: str, section: str, option: str, value: str) -> None:
     """
     old_datas = list()
     new_datas = list()
-    FIND_FLAG = False
+    #用來判斷是否有找到[Section]相同的字串
+    section_find_flag = False
+    #用來判斷是否有找到Option相同的字串
+    option_find_flag = False
+    
     if not os.path.isfile(file_path):
         print(file_path,"is not found")
         return
@@ -84,11 +62,11 @@ def save_ini(file_path: str, section: str, option: str, value: str) -> None:
         #找尋相對應的Section
         if string_meta[0] == "[":
             if string_meta[0:len(section)] == section:
-                FIND_FLAG =True
+                section_find_flag =True
             else:
-                FIND_FLAG = False
+                section_find_flag = False
         else:
-            if not FIND_FLAG:
+            if not section_find_flag:
                 new_datas.append(old_datas[index])
                 continue
         #找到Section後,在找到相對應的option
@@ -97,55 +75,34 @@ def save_ini(file_path: str, section: str, option: str, value: str) -> None:
             string_index = old_datas[index].find("=")
             add_string = old_datas[index][0:string_index] + "= " +value+"\n"
             new_datas.append(add_string)
+            option_find_flag = True
         else:
             new_datas.append(old_datas[index])
-    #創造或複蓋文件
-    with open(file_path,"w",encoding="utf-8") as f:
-        f.writelines(new_datas)
+    
+    if section_find_flag and option_find_flag:
+        #創造或複蓋文件
+        with open(file_path,"w",encoding="utf-8") as f:
+            f.writelines(new_datas)
+    else:
+        if section_find_flag:
+            print("在Section下,找不到相同的Option值")
+        elif option_find_flag:
+            print("找不到相同的Section值")
+        else:
+            print("找不到Section與Option值")
 
 if __name__ == "__main__":
     # 要檢查的檔案路徑
     #filepath = "/etc/motd"
-    filepath = "config-test.ini"
+    FILEPATH = "config-test.ini"
 
     # 檢查檔案是否存在
-    if os.path.isfile(filepath):
+    if os.path.isfile(FILEPATH):
         print("檔案存在。")
     else:
         print("檔案不存在。")
-        
+
     save_ini("config-test.ini",
              "[User1]",
              "Password",
              "qwer123456789")
-        
-            
-            
-    '''
-    print("test_data[2] =",test_datas[2])
-    s= test_datas[2]
-    print("長度",len(s),type(s))
-    for i in s:
-        print(i)
-    strings = test_datas[2].split("=")
-    print(strings[0])
-    strings2 = "test = test =123"
-    print(strings2)
-    print(strings2.find("="))
-    print(strings2[strings2.find("=")+1:len(strings2)+1])
-    print("○●○●○●○●○●○●○●==>Test result PASS<==○●○●○●○●○●○●○●○●○●○●")
-    print(strings2.replace(" ",""))
-    '''
-    #with open 的參數
-    '''
-    Mode	描述
-    +	打開一個文件進行更新(可讀可寫)
-    r	以只讀方式打開文件
-    r+	打開一個文件用於讀寫
-    w	打開一個文件只用於寫入，如果該文件已存在則打開文件，並從開頭開始編輯，原有內容會被刪除。如果該文件不存在，創建新文件。
-    w+	打開一個文件用於讀寫。如果該文件已存在則打開文件，並從開頭開始編輯，原有內容會被刪除。如果該文件不存在，創建新文件。
-    a	打開一個文件用於追加。如果該文件已存在，新的內容將會被寫入到已有內容之後。如果該文件不存在，創建新文件進行寫入。
-    a+	打開一個文件用於讀寫。如果該文件已存在，文件指針將會放在文件的結尾。文件打開時會是追加模式。如果該文件不存在，創建新文件用於讀寫。
-    ab+	以二進制格式打開一個文件用於追加。
-    '''
-    
