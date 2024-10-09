@@ -2,13 +2,15 @@
 該文件是用來配置顯示訊息的相關文件
 當前會有三總文件:
 Total.log記錄所有輸出訊息
-__file__個別檔案的Log(預設層級為DEBUG)
+sys.argv[0]個別檔案的Log(預設層級為DEBUG)
 終端機 的輸出(預設層級為DEBUG)
 """
 import logging
 import platform
 import os
 import sys
+
+
 
 
 
@@ -37,12 +39,13 @@ logging.basicConfig(filename=log_path, level=logging.DEBUG,
 #如果SetLevel.DEBUG會顯示出所有層級;
 #如果SetLevel.WARNING則會顯示warning、error、critical這三個層級
 
-
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 
 # set two handlers
-LOG_FILE = f"{__file__}.log"
+#LOG_FILE = f"{__file__}.log"
+LOG_FILE = f"{os.path.basename(sys.argv[0])}.log"
+
 # rm_file(log_file)
 fileHandler = logging.FileHandler(os.path.join(cur_dir, LOG_FILE), mode = 'w')
 fileHandler.setLevel(logging.DEBUG)
