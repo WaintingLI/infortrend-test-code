@@ -44,7 +44,8 @@ logger.setLevel(logging.DEBUG)
 
 # set two handlers
 #LOG_FILE = f"{__file__}.log"
-LOG_FILE = f"{os.path.basename(sys.argv[0])}.log"
+get_log_name = os.path.basename(sys.argv[0]).replace(".py","")
+LOG_FILE = f"{get_log_name}.log"
 
 # rm_file(log_file)
 fileHandler = logging.FileHandler(os.path.join(cur_dir, LOG_FILE), mode = 'w')
