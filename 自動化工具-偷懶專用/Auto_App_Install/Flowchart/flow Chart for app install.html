@@ -1,0 +1,193 @@
+<html>
+<head><title>Image map created by yEd</title>
+<style type="text/css">
+.tooltip {
+  font-size:10pt;
+  background-color:#FFFFCC;
+  border:1px solid black;
+  padding:2px
+}
+</style>
+<style type="text/css">
+.tooltip {
+  position:absolute;
+  display:none
+}
+</style>
+</head>
+<body>
+
+<script type="text/javascript">
+tooltip = null;
+document.onmousemove = updateTooltip;
+function updateTooltip(e) {
+try {
+if (document.all) {
+if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+x = document.documentElement.scrollLeft + window.event.x;
+y = document.documentElement.scrollTop + window.event.y;
+}
+else { // all other Explorers
+x = document.body.scrollLeft + window.event.x;
+y = document.body.scrollTop + window.event.y;
+}
+}
+else {
+x = e.pageX;
+y = e.pageY;
+}
+if (tooltip != null) {
+o = 20;
+var sx, sy;
+if (self.pageYOffset) { // all except Explorer
+sx = self.pageXOffset;
+sy = self.pageYOffset;
+}
+else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+sx = document.documentElement.scrollLeft;
+sy = document.documentElement.scrollTop;
+}
+else if (document.body) { // all other Explorers
+sx = document.body.scrollLeft;
+sy = document.body.scrollTop;
+}
+t = y + o + tooltip.offsetHeight;
+w = sy + document.body.clientHeight;
+if (t > w) {
+y = y - o - tooltip.offsetHeight;
+}
+else {
+y = y + o;
+}
+t = x + o + tooltip.offsetWidth;
+w = sx + document.body.clientWidth;
+if (t > w) {
+x = x - o - tooltip.offsetWidth;
+}
+else {
+x = x + o;
+}
+if ((tooltip.style.top == '' || tooltip.style.top == 0) && (tooltip.style.left == '' || tooltip.style.left == 0))
+{
+tooltip.style.width = tooltip.offsetWidth + 'px';
+tooltip.style.height = tooltip.offsetHeight + 'px';
+}
+tooltip.style.left = x + "px";
+tooltip.style.top = y + "px";
+}
+} catch (error) { error = null; }
+}
+function showTooltip(id) {
+try {
+tooltip = document.getElementById(id);
+tooltip.style.display = "block";
+} catch (error) { error = null; }
+}
+function hideTooltip() {
+try {
+tooltip.style.display = "none";
+} catch (error) { error = null; }
+}
+</script>
+
+<div class="tooltip" id="n0">Auto_app_install.py</div>
+<div class="tooltip" id="n1">App Name Data</div>
+<div class="tooltip" id="n2">logging_config.py</div>
+<div class="tooltip" id="n3">Start</div>
+<div class="tooltip" id="n4">Check these App Config joson</div>
+<div class="tooltip" id="n5">Is there any relative configure json ?</div>
+<div class="tooltip" id="n6">is there next app</div>
+<div class="tooltip" id="n7">End</div>
+<div class="tooltip" id="n8">App Name</div>
+<div class="tooltip" id="n9">Start Install App</div>
+<div class="tooltip" id="n10">Check App json General Setting:<br>ex: CPU, Memory,etc...</div>
+<div class="tooltip" id="n11">Set App General Setting</div>
+<div class="tooltip" id="n12">Check App json Storage Setting:<br>ex: PVC, size,etc...</div>
+<div class="tooltip" id="n13">Set App Storage Setting</div>
+<div class="tooltip" id="n14">Check App json Service Setting:<br>ex: Service Type, IP,etc...</div>
+<div class="tooltip" id="n15">Set App Service Setting</div>
+<div class="tooltip" id="n16">Check App json APP Setting Setting:<br>ex: App Value, other sertting,etc...</div>
+<div class="tooltip" id="n17">Set App  Setting</div>
+<div class="tooltip" id="n18">End</div>
+<div class="tooltip" id="e4">No</div>
+<div class="tooltip" id="e6">Yes</div>
+<div class="tooltip" id="e7">No</div>
+<div class="tooltip" id="e10">Yes</div>
+<div class="tooltip" id="e11">No</div>
+<div class="tooltip" id="e12">Yes</div>
+<div class="tooltip" id="e13">No</div>
+<div class="tooltip" id="e14">Yes</div>
+<div class="tooltip" id="e15">No</div>
+<div class="tooltip" id="e16">Yes</div>
+
+<map name="image1_1">
+  <area shape="poly" coords="260,464,260,464,338,464,338,474,260,474,260,474" alt="" onmouseover="showTooltip('e16')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="140,582,140,582,140,544,150,544,150,582,150,582" alt="" onmouseover="showTooltip('e15')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="260,644,260,644,338,644,338,654,260,654,260,654" alt="" onmouseover="showTooltip('e14')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="140,791,140,791,140,724,150,724,150,791,150,791" alt="" onmouseover="showTooltip('e13')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="260,853,260,853,338,853,338,863,260,863,260,863" alt="" onmouseover="showTooltip('e12')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="140,1001,140,1001,140,933,150,933,150,1001,150,1001" alt="" onmouseover="showTooltip('e11')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="66,124,291,231" alt="" onmouseover="showTooltip('n1')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="105,316,185,356" alt="" onmouseover="showTooltip('n18')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="346,402,569,536" alt="" onmouseover="showTooltip('n17')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="30,402,260,536" alt="" onmouseover="showTooltip('n16')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="346,582,569,716" alt="" onmouseover="showTooltip('n15')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="30,582,260,716" alt="" onmouseover="showTooltip('n14')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="346,791,569,925" alt="" onmouseover="showTooltip('n13')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="30,791,260,925" alt="" onmouseover="showTooltip('n12')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="15,276,584,1963" alt="" onmouseover="showTooltip('n0')" onmouseout="hideTooltip()"/>
+</map>
+
+<map name="image1_2">
+  <area shape="poly" coords="140,11,140,11,140,-56,150,-56,150,11,150,11" alt="" onmouseover="showTooltip('e11')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="260,73,260,73,338,73,338,83,260,83,260,83" alt="" onmouseover="showTooltip('e10')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="442,416,442,416,442,330,452,330,452,416,452,416" alt="" onmouseover="showTooltip('e7')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="452,518,452,518,452,587,447,592,244,592,244,582,447,582,447,587,442,587,442,518,442,518" alt="" onmouseover="showTooltip('e6')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="262,462,262,462,338,462,338,472,262,472,262,472" alt="" onmouseover="showTooltip('e4')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="346,11,569,145" alt="" onmouseover="showTooltip('n11')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="30,11,260,145" alt="" onmouseover="showTooltip('n10')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="83,232,206,285" alt="" onmouseover="showTooltip('n9')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="82,676,208,748" alt="" onmouseover="showTooltip('n8')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="407,282,487,322" alt="" onmouseover="showTooltip('n7')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="346,416,548,518" alt="" onmouseover="showTooltip('n6')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="32,431,262,503" alt="" onmouseover="showTooltip('n5')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="59,536,236,638" alt="" onmouseover="showTooltip('n4')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="105,785,185,836" alt="" onmouseover="showTooltip('n3')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="15,-714,584,973" alt="" onmouseover="showTooltip('n0')" onmouseout="hideTooltip()"/>
+</map>
+
+<map name="image2_1">
+  <area shape="poly" coords="-172,464,-172,464,-94,464,-94,474,-172,474,-172,474" alt="" onmouseover="showTooltip('e16')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="-172,644,-172,644,-94,644,-94,654,-172,654,-172,654" alt="" onmouseover="showTooltip('e14')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="-172,853,-172,853,-94,853,-94,863,-172,863,-172,863" alt="" onmouseover="showTooltip('e12')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="154,15,417,257" alt="" onmouseover="showTooltip('n2')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-86,402,136,536" alt="" onmouseover="showTooltip('n17')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-86,582,136,716" alt="" onmouseover="showTooltip('n15')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-86,791,136,925" alt="" onmouseover="showTooltip('n13')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-418,276,151,1963" alt="" onmouseover="showTooltip('n0')" onmouseout="hideTooltip()"/>
+</map>
+
+<map name="image2_2">
+  <area shape="poly" coords="-172,73,-172,73,-94,73,-94,83,-172,83,-172,83" alt="" onmouseover="showTooltip('e10')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="9,416,9,416,9,330,19,330,19,416,19,416" alt="" onmouseover="showTooltip('e7')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="19,518,19,518,19,587,14,592,-188,592,-188,582,14,582,14,587,9,587,9,518,9,518" alt="" onmouseover="showTooltip('e6')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-86,11,136,145" alt="" onmouseover="showTooltip('n11')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-25,282,54,322" alt="" onmouseover="showTooltip('n7')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-86,416,115,518" alt="" onmouseover="showTooltip('n6')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="-418,-714,151,973" alt="" onmouseover="showTooltip('n0')" onmouseout="hideTooltip()"/>
+</map>
+
+
+    <table class="yimagetable" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td><img class="yimage" src="flow%20Chart%20for%20app%20install1_1.jpg" usemap="#image1_1" border="0" alt=""/></td>
+        <td><img class="yimage" src="flow%20Chart%20for%20app%20install2_1.jpg" usemap="#image2_1" border="0" alt=""/></td>
+      </tr>
+      <tr>
+        <td><img class="yimage" src="flow%20Chart%20for%20app%20install1_2.jpg" usemap="#image1_2" border="0" alt=""/></td>
+        <td><img class="yimage" src="flow%20Chart%20for%20app%20install2_2.jpg" usemap="#image2_2" border="0" alt=""/></td>
+      </tr>
+    </table>
+
+</body>
+</html>
