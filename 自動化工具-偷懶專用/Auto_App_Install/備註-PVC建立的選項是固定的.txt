@@ -1,0 +1,2 @@
+強制取消 => Single Node Read-Write
+強制設定 => Many Nodes Read-Write

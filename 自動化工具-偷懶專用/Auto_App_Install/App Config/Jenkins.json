@@ -1,0 +1,11 @@
+{
+    "General":{},
+    "Storage":{
+		"StorageClass for Database *":"local-replica2-delay-bind"
+	},
+    "Service":{
+        "App Image Service Type *":"LoadBalancer",
+		"Static Virtual IP *":"172.24.128.175"
+    },
+    "APP setting":{}
+}

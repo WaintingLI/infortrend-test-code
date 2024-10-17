@@ -1,0 +1,104 @@
+[2024-10-17 14:16:08] {logging_config.py:84} INFO - Arguments:
+[2024-10-17 14:16:08] {logging_config.py:84} INFO -   app_name: Jenkins
+[2024-10-17 14:16:08] {logging_config.py:84} INFO -   service_type: LoadBalancer
+[2024-10-17 14:16:08] {logging_config.py:84} INFO -   name_space: test-for-jenkins
+[2024-10-17 14:16:08] {logging_config.py:84} INFO -   ip: 
+[2024-10-17 14:16:08] {logging_config.py:84} INFO -   suf: 
+[2024-10-17 14:16:29] {logging_config.py:84} INFO - get_app_list=['Apache Superset', 'MySQL', 'Blender', 'MinIO']
+[2024-10-17 14:16:29] {logging_config.py:84} INFO - App Config/Apache Superset.jsonis not found
+[2024-10-17 14:16:29] {logging_config.py:84} INFO - get_app_json_config ={'General': {}, 'Storage': {}, 'Service': {'App Image Service Type *': 'LoadBalancer', 'Static Virtual IP *': '172.24.128.171'}, 'APP setting': {}}
+[2024-10-17 14:16:29] {logging_config.py:84} INFO - App Config/Blender.jsonis not found
+[2024-10-17 14:16:29] {logging_config.py:84} INFO - App Config/MinIO.jsonis not found
+[2024-10-17 14:16:48] {logging_config.py:76} DEBUG - Active Directory
+[2024-10-17 14:16:48] {logging_config.py:76} DEBUG - Airbyte
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Airflow
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Apache Superset
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Apache Tomcat
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Argo CD
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Argo Workflows
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Blender
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Cassandra
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Chatwoot
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Clickhouse
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - DataHub
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Descheduler
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Doku Wiki
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Dremio
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Drupal
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Elasticsearch
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Exchange Server
+[2024-10-17 14:16:49] {logging_config.py:76} DEBUG - Focalboard
+[2024-10-17 14:16:50] {logging_config.py:76} DEBUG - GitLab
+[2024-10-17 14:16:50] {logging_config.py:76} DEBUG - Grafana
+[2024-10-17 14:16:50] {logging_config.py:76} DEBUG - HPC Desktop
+[2024-10-17 14:16:50] {logging_config.py:76} DEBUG - Jenkins
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - Create a New Namespace
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - 
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - default
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - hank
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - oracle
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - test-for-balancer
+[2024-10-17 14:17:04] {logging_config.py:76} DEBUG - test-for-jenkins
+[2024-10-17 14:17:07] {logging_config.py:84} INFO - 在Storage
+[2024-10-17 14:17:07] {logging_config.py:76} DEBUG - StorageClass for Database *
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - no such element: Unable to locate element: {"method":"css selector","selector":" div > input"}
+  (Session info: chrome=123.0.6312.86)
+[2024-10-17 14:17:17] {logging_config.py:84} INFO - StorageClass for Database *
+[2024-10-17 14:17:17] {logging_config.py:84} INFO - 找到Storage Class設定值 = local-replica2-delay-bind
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - pvc_item=gs3016
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - pvc_item=local
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - pvc_item=local-delay-bind
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - pvc_item=local-replica2
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - pvc_item=local-replica2-delay-bind
+[2024-10-17 14:17:17] {logging_config.py:76} DEBUG - StorageClass for Database *--END
+[2024-10-17 14:17:27] {logging_config.py:76} DEBUG - no such element: Unable to locate element: {"method":"css selector","selector":"label"}
+  (Session info: chrome=123.0.6312.86)
+[2024-10-17 14:17:27] {logging_config.py:76} DEBUG - 沒有Label相關元素,下一個資料
+[2024-10-17 14:17:27] {logging_config.py:76} DEBUG - Database Storage Size
+[2024-10-17 14:17:28] {logging_config.py:84} INFO - App Service name
+[2024-10-17 14:17:28] {logging_config.py:84} INFO - App Image Service Type *
+[2024-10-17 14:17:38] {logging_config.py:76} DEBUG - no such element: Unable to locate element: {"method":"css selector","selector":" div > input"}
+  (Session info: chrome=123.0.6312.86)
+[2024-10-17 14:17:38] {logging_config.py:84} INFO - App Image Service Type *
+[2024-10-17 14:17:38] {logging_config.py:84} INFO - LoadBalancer
+[2024-10-17 14:17:48] {logging_config.py:76} DEBUG - no such element: Unable to locate element: {"method":"css selector","selector":"label"}
+  (Session info: chrome=123.0.6312.86)
+[2024-10-17 14:17:48] {logging_config.py:84} INFO - App Image Service Type *
+[2024-10-17 14:17:48] {logging_config.py:84} INFO - 沒有Label相關元素,下一個資料
+[2024-10-17 14:17:48] {logging_config.py:84} INFO - Static Virtual IP *
+[2024-10-17 14:17:49] {logging_config.py:84} INFO - IP 設定:172.24.128.162
+[2024-10-17 14:17:50] {logging_config.py:76} DEBUG - stale element reference: stale element not found in the current frame
+  (Session info: chrome=123.0.6312.86)
+[2024-10-17 14:17:50] {logging_config.py:84} INFO - Static Virtual IP *
+[2024-10-17 14:17:50] {logging_config.py:84} INFO - 沒有Label相關元素,下一個資料
+[2024-10-17 14:17:50] {logging_config.py:84} INFO - 即將關閉瀏覽器
+[2024-10-17 14:17:50] {logging_config.py:84} INFO - 29 s
+[2024-10-17 14:17:51] {logging_config.py:84} INFO - 28 s
+[2024-10-17 14:17:52] {logging_config.py:84} INFO - 27 s
+[2024-10-17 14:17:53] {logging_config.py:84} INFO - 26 s
+[2024-10-17 14:17:54] {logging_config.py:84} INFO - 25 s
+[2024-10-17 14:17:55] {logging_config.py:84} INFO - 24 s
+[2024-10-17 14:17:56] {logging_config.py:84} INFO - 23 s
+[2024-10-17 14:17:57] {logging_config.py:84} INFO - 22 s
+[2024-10-17 14:17:58] {logging_config.py:84} INFO - 21 s
+[2024-10-17 14:17:59] {logging_config.py:84} INFO - 20 s
+[2024-10-17 14:18:00] {logging_config.py:84} INFO - 19 s
+[2024-10-17 14:18:01] {logging_config.py:84} INFO - 18 s
+[2024-10-17 14:18:02] {logging_config.py:84} INFO - 17 s
+[2024-10-17 14:18:03] {logging_config.py:84} INFO - 16 s
+[2024-10-17 14:18:04] {logging_config.py:84} INFO - 15 s
+[2024-10-17 14:18:05] {logging_config.py:84} INFO - 14 s
+[2024-10-17 14:18:07] {logging_config.py:84} INFO - 13 s
+[2024-10-17 14:18:08] {logging_config.py:84} INFO - 12 s
+[2024-10-17 14:18:09] {logging_config.py:84} INFO - 11 s
+[2024-10-17 14:18:10] {logging_config.py:84} INFO - 10 s
+[2024-10-17 14:18:11] {logging_config.py:84} INFO - 9 s
+[2024-10-17 14:18:12] {logging_config.py:84} INFO - 8 s
+[2024-10-17 14:18:13] {logging_config.py:84} INFO - 7 s
+[2024-10-17 14:18:14] {logging_config.py:84} INFO - 6 s
+[2024-10-17 14:18:15] {logging_config.py:84} INFO - 5 s
+[2024-10-17 14:18:16] {logging_config.py:84} INFO - 4 s
+[2024-10-17 14:18:17] {logging_config.py:84} INFO - 3 s
+[2024-10-17 14:18:18] {logging_config.py:84} INFO - 2 s
+[2024-10-17 14:18:19] {logging_config.py:84} INFO - 1 s
+[2024-10-17 14:18:20] {logging_config.py:84} INFO - 0 s

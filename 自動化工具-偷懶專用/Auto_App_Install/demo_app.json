@@ -1,0 +1,8 @@
+{
+    "General":{},
+    "Storage":{},
+    "Service":{
+        "App Image Service Type *":"LoadBalancer"
+    },
+    "APP setting":{}
+}
