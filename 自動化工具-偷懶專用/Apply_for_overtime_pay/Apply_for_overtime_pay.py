@@ -98,8 +98,8 @@ if __name__ == "__main__":
     
     #登入
     WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
-    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys("waiting.lee")
-    driver.find_element(By.CSS_SELECTOR,"input#Password").send_keys("!Dream810120")
+    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys("填寫帳號")
+    driver.find_element(By.CSS_SELECTOR,"input#Password").send_keys("填寫密碼")
     driver.find_element(By.CSS_SELECTOR,"button.btn.btn-default").click()
     sleep(3)
     #開始填寫今天資料
