@@ -16,7 +16,7 @@ def update_work_overtime_date(Set_Date:str = "1800~1900") -> None:
 
     #要填寫的Google表單
     sht = gc.open_by_url(
-    'https://docs.google.com/spreadsheets/d/1d1j57N9s53Wzal4iG68E9jIEqG_DtqHPPCC8tlfYZoo/edit?usp=drive_link'
+    '輸入要填寫的Google表單'
     )
 
     print("============開始上傳============")
