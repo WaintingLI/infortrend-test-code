@@ -151,7 +151,7 @@ if __name__  == "__main__":
     gc = pygsheets.authorize(service_file='./test-api-420102-4e4919f94ad4.json')
 
     sht = gc.open_by_url(
-    'https://docs.google.com/spreadsheets/d/1d1j57N9s53Wzal4iG68E9jIEqG_DtqHPPCC8tlfYZoo/edit?usp=drive_link'
+    '輸入要填寫的表單'
     )
 
 
