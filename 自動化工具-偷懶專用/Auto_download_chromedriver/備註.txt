@@ -1,0 +1,10 @@
+主要程式是"upgrade_chromedriver.py"
+次要是get_chromedriver_website.py
+
+
+需要安裝以下pip
+pip install configparser==6.0.0
+pip install requests==2.31.0
+pip install bs4==0.0.1
+
+
