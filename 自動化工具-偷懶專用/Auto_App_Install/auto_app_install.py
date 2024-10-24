@@ -6,6 +6,7 @@ from time import sleep
 import sys
 import os
 import configparser
+import csv
 import random
 import json
 from selenium import webdriver
@@ -65,18 +66,37 @@ RANCHER_ip = cf.get("Eonkube_Info","Rancher_ip")
 ADMIN_USERNAME = cf.get("Eonkube_Info","Admin_Username")
 ADMIN_PASSWORD = cf.get("Eonkube_Info","Admin_Password")
 
+def export_csv_file(get_dict_data:dict) -> None:
+    """將App資料以CSV方式儲存在本地位置
+    欄位:['App Name', 'Service type', 'Name Space','IP']
+    Args:
+        get_dict_data (dict): 輸入含有['App Name', 'Service type', 'Name Space','IP']的dict
+    """
+    csv_name = "app_install_list.csv"
+    csv_already_exit_flag = True
+    if not os.path.isfile(csv_name):
+        csv_already_exit_flag = False
+
+
+    with open(csv_name, 'a', newline='', encoding="utf-8") as csvfile:
+        fieldnames = ['App Name', 'Service type', 'Name Space','IP']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        if not csv_already_exit_flag:
+            writer.writeheader()
+        writer.writerow(get_dict_data)
 
 
 
-
-
-def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="balancer",namespace:str="test-for-balancer") -> None:
-    """_summary_
+def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="balancer",namespace:str="test-for-balancer") -> str | None:
+    """
     從Eonkube安裝特定App
     Args:
         App_name (str, optional): App名稱,要跟Chart的App名稱一樣(大小寫英文字母要一樣). Defaults to "Airbyte".
         Service_type (str, optional): 用來分辨該App是使用哪一個Type,全部使用英文字母小寫(balancer、node、cluster). Defaults to "balancer".
         Namespace (str, optional): 要安裝的NameSpace,如果沒有找到對應的Name Space會自行創建. Defaults to "test-for-balancer".
+    Returns:
+        str | None: 回傳App的安裝名稱
     """
     to_get_app_list = driver.find_elements(By.CSS_SELECTOR,"main > div > div > div.grid > div > h4.name")
     for app_item in to_get_app_list:
@@ -100,7 +120,7 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
                 WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
             except  TimeoutException:
                 css_selector="ul.vs__dropdown-menu"
-                WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
             namespace_list = driver.find_elements(By.CSS_SELECTOR,css_selector + "> li")
             for app_item in namespace_list:
                 logging_config.debug(app_item.text)
@@ -122,6 +142,8 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
                     write_app_name = write_app_name + character
             if service_type != "":
                 write_app_name = write_app_name + "-" + service_type
+            #移除空格(Space)
+            write_app_name = write_app_name.replace(" ","")
             driver.find_element(By.CSS_SELECTOR,"div.labeled > div > input[placeholder=\"A unique name\"]").send_keys(write_app_name)
             #點選Next
             driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button > span").click()
@@ -130,6 +152,8 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
         logging_config.info("沒有找到App ==>"+ app_name)
         logging_config.info("字串對應的hex")
         string_2_ascii.string_to_hex(app_name)
+        return None
+    return write_app_name
 
 def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test") -> str:
     """
@@ -274,6 +298,8 @@ def create_args() -> dict:
 
 if __name__ == "__main__":
 
+    #csv資料宣告
+    csv_data_dict = {}
     #設定Arugment
     args_2 = create_args()
 
@@ -289,12 +315,12 @@ if __name__ == "__main__":
     logging_config.set_consolehandler_level("INFO")
 
     #檢查網頁是否連線正常
-    response = requests.get(RANCHER_ip, timeout=10, verify=False)
-    if response.status_code != 200:
-        logging_config.info(f"網路異常, 網路status_code = {response.status_code}連線網址 ={RANCHER_ip}")
-        sys.exit(1)
+    #response = requests.get(RANCHER_ip, timeout=10, verify=False)
+    #if response.status_code != 200:
+    #   logging_config.info(f"網路異常, 網路status_code = {response.status_code}連線網址 ={RANCHER_ip}")
+    #   sys.exit(1)
 
-
+    '''
     #獲取App清單,並且依造其Config來安裝App
     get_app_list = []
     get_app_json_config ={}
@@ -314,8 +340,9 @@ if __name__ == "__main__":
         with open(APP_INDEX + app_name_item + ".json","r",encoding="utf-8") as f:
             get_app_json_config = dict(json.load(f))
         logging_config.info("get_app_json_config ="+ str(get_app_json_config))
-
+    '''
     #檢查該App是否有Configure檔案
+    APP_INDEX = "App Config/"
     get_file_path = APP_INDEX + args_2.app_name + ".json"
     if not os.path.isfile(get_file_path):
         logging_config.info(str(get_file_path) + "is not found")
@@ -331,23 +358,58 @@ if __name__ == "__main__":
         test_dict["Service"]["App Image Service Type *"] = args_2.service_type
         #刪除LoadBalancer的IP設定
         if test_dict["Service"]["App Image Service Type *"] != "LoadBalancer":
-            test_dict["Service"].pop("App Image Service Type *",None)
+            test_dict["Service"].pop("Static Virtual IP *",None)
+    #針對MinIO來跟改Service 的設定(因為名稱與)
+    if test_dict["Service"].get("MinIO Web Service Type *",False):
+        test_dict["Service"]["MinIO Web Service Type *"] = args_2.service_type
+        #刪除LoadBalancer的IP設定
+        if test_dict["Service"]["MinIO Web Service Type *"] != "LoadBalancer":
+            test_dict["Service"].pop("Static Virtual IP for MinIO *",None)
 
+    #獲取csv資料
+    csv_data_dict['App Name'] = args_2.app_name
+    csv_data_dict['Name Space'] = args_2.name_space
+    csv_data_dict['Service type'] = test_dict["Service"].get("App Image Service Type *","None")
+    csv_data_dict['IP'] = "None"
     #開啟網址
     driver.get(RANCHER_ip)
     #登入
     #登入EonKube
-    try:
-        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
-    except TimeoutException:
-        #從Active Directory切換到local user
-        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
-    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys(ADMIN_USERNAME)
-    driver.find_element(By.CSS_SELECTOR,"input[type=\"password\"]").send_keys(ADMIN_PASSWORD)
-    sleep(1)
-    driver.find_element(By.CSS_SELECTOR,"button#submit").click()
-    sleep(3)
+    DO_WHILE_FLAG = True
+    while DO_WHILE_FLAG:
+        DO_WHILE_FLAG = False
+        try:
+            WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
+        except TimeoutException:
+            try:
+                #從Active Directory切換到local user 
+                WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
+            except TimeoutException:
+                driver.refresh()
+                DO_WHILE_FLAG = True
+                sleep(3)    
+        driver.find_element(By.CSS_SELECTOR,"input#username").send_keys(ADMIN_USERNAME)
+        driver.find_element(By.CSS_SELECTOR,"input[type=\"password\"]").send_keys(ADMIN_PASSWORD)
+        sleep(1)
+        driver.find_element(By.CSS_SELECTOR,"button#submit").click()
+        sleep(3)
 
+        #將Project id 固定為"Only User Namespaces"
+        try:
+            get_project_id_name = driver.find_element(By.CSS_SELECTOR,"div.ns-filter > div > div")
+            logging_config.debug(f"get_project_id_name.text ={get_project_id_name.text}")
+            if get_project_id_name.text != "Only User Namespaces":
+                get_project_id_name.click()
+                get_project_id_list = driver.find_elements(By.CSS_SELECTOR,"div.ns-options > div")
+                for project_id_item in get_project_id_list:
+                    logging_config.debug(f"project_id_item.text = {project_id_item.text}")
+                    if project_id_item.text == "Only User Namespaces":
+                        project_id_item.click()
+                        break
+        except NoSuchElementException:
+            driver.refresh()
+            DO_WHILE_FLAG = True
+            sleep(3)
 
     #點選App > chart
     #
@@ -359,9 +421,9 @@ if __name__ == "__main__":
     WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(2) > h4.name")))
 
     #開始安裝App
-    install_from_chart_to_app_deploy(args_2.app_name,args_2.suf,args_2.name_space)
-
-
+    csv_data_dict['App Name'] = install_from_chart_to_app_deploy(args_2.app_name,args_2.suf,args_2.name_space)
+    
+    print(test_dict)
     #依照不同功能來設定App
     while test_dict.get("General",False):
         logging_config.info("在General")
@@ -388,6 +450,7 @@ if __name__ == "__main__":
                                 break
                     break
         break
+
     while test_dict.get("Storage",False):
         driver.find_element(By.CSS_SELECTOR,"li#Storage > a").click()
         logging_config.info("在Storage")
@@ -447,12 +510,12 @@ if __name__ == "__main__":
             except NoSuchElementException as e:
                 logging_config.debug(e.msg)
                 logging_config.info(json_option)
-                logging_config.info("沒有Label相關元素,下一個資料")
+                logging_config.debug("沒有Label相關元素,下一個資料")
                 continue
             except StaleElementReferenceException as e:
                 logging_config.debug(e.msg)
                 logging_config.info(json_option)
-                logging_config.info("沒有Label相關元素,下一個資料")
+                logging_config.debug("沒有Label相關元素,下一個資料")
                 continue
             #(有選單的)設定Service Type
             for json_option in list(test_dict['Service'].keys()):
@@ -462,6 +525,12 @@ if __name__ == "__main__":
                         item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.DELETE)
                         if str(json_option) == "Static Virtual IP *":
                             get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
+                            csv_data_dict['IP'] = get_new_ip
+                            logging_config.info(f"IP 設定:{get_new_ip}")
+                            item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)
+                        elif str(json_option) == "Static Virtual IP for MinIO *":
+                            get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP for MinIO *'])
+                            csv_data_dict['IP'] = get_new_ip
                             logging_config.info(f"IP 設定:{get_new_ip}")
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)
                         else:
@@ -482,21 +551,21 @@ if __name__ == "__main__":
         break
 
     while test_dict.get("APP setting",False):
-        driver.find_element(By.CSS_SELECTOR,"li#APP\ setting > a").click()
+        driver.find_element(By.CSS_SELECTOR,"li#APP\\ setting > a").click()
         logging_config.info("APP setting")
-        get_options = driver.find_elements(By.CSS_SELECTOR,"section#APP\ setting >  div > div > div > div > div > div ")
+        get_options = driver.find_elements(By.CSS_SELECTOR,"section#APP\\ setting >  div > div > div > div > div > div ")
         for i, item in enumerate(get_options):
             try:
                 logging_config.info(item.find_element(By.CSS_SELECTOR,"label").text)
             except NoSuchElementException as e:
                 logging_config.debug(e.msg)
                 logging_config.info(json_option)
-                logging_config.info("沒有Label相關元素,下一個資料")
+                logging_config.debug("沒有Label相關元素,下一個資料")
                 continue
             except StaleElementReferenceException as e:
                 logging_config.debug(e.msg)
                 logging_config.info(json_option)
-                logging_config.info("沒有Label相關元素,下一個資料")
+                logging_config.debug("沒有Label相關元素,下一個資料")
                 continue
             for json_option in list(test_dict['APP setting'].keys()):
                 logging_config.debug(f"json_option ={json_option}")
@@ -523,12 +592,17 @@ if __name__ == "__main__":
         break
 
 
+
     #安裝App
     driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
 
     #倒數關閉
     logging_config.info("即將關閉瀏覽器")
-    for i in range(30):
-        logging_config.info(f"{30-i-1} s")
+    
+    #匯出資料
+    export_csv_file(csv_data_dict)
+    count_down = 10
+    for i in range(count_down):
+        logging_config.info(f"{count_down-i-1} s")
         sleep(1)
     driver.close()

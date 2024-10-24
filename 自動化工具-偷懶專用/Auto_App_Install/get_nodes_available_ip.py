@@ -7,7 +7,7 @@ import configparser
 import datetime
 import paramiko
 import logging_config
-
+from paramiko import SSHException
 #切換命令提示字元到Python檔案所在的目錄
 #檢查當前工作路徑是否在Python檔案的所在地,如果是就不會切換目錄
 if os.path.dirname(sys.argv[0]):
@@ -89,7 +89,9 @@ def get_available_cluster_ip(will_set_ip:str="172.24.128.170") -> str:
             #print("get_cluster_used_ip =",get_cluster_used_ip)
             break
         except TimeoutError:
-            logging_config.info(f"Node Connect {node_ip} Fail")
+            logging_config.info(f"Node Connect {node_ip} Fail(TimeoutError)")
+        except SSHException:
+            logging_config.info(f"Node Connect {node_ip} Fail(SSHException)")
     else:
         logging_config.critical("All node ip can not connect ")
         logging_config.critical("======node_list-Start======== ")
