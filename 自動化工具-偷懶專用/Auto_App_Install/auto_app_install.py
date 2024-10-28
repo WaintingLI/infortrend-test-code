@@ -14,14 +14,17 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.keys import Keys
 import requests
 import string_2_ascii
 import logging_config
 import get_nodes_available_ip
+import communicate_to_machine
 #from selenium.webdriver.support.ui import Select
 #from selenium.webdriver.common.action_chains import ActionChains
 #from selenium.common.exceptions import SessionNotCreatedException
@@ -46,7 +49,8 @@ options.add_argument('--start-maximized')
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 #driver_location='/usr/bin/chromedriver'
 #指令Chromedriver位置
-BINARY_LOCATION='C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-win64/chrome.exe'
+BINARY_LOCATION ='C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-win64/chrome.exe'
+#BINARY_LOCATION = 'C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-headless-shell-win64/chrome-headless-shell.exe'
 options.binary_location=BINARY_LOCATION
 #driver=webdriver.Chrome(executable_path=driver_location,chrome_options=options)
 #js="window.open('{}','_blank');"
@@ -104,11 +108,16 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
         if app_item.text == app_name:
             app_item.click()
             #點選Install按鈕
-            WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div.chart-header > div.name-logo-install > button")))
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div.chart-header > div.name-logo-install > button")))
             driver.find_element(By.CSS_SELECTOR,"main > div > div.chart-header > div.name-logo-install > button").click()
 
             #點選NameSpace
-            WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")))
+            while True: 
+                try:
+                    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")))
+                    break
+                except TimeoutException:
+                    pass
             #driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions").click()
             namespace_button = driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")
             driver.execute_script("$(arguments[0]).click()",namespace_button)
@@ -117,7 +126,7 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
             #vs__dropdown-menu vs__dropdown-up
             css_selector="ul.vs__dropdown-menu.vs__dropdown-up"
             try:
-                WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
             except  TimeoutException:
                 css_selector="ul.vs__dropdown-menu"
                 WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
@@ -166,7 +175,7 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
         str: 最終創建pvc的名稱
     """
     #自動新增PVC(新開分頁)
-    #WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(4) > a > span"))).click()
+    #WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(4) > a > span"))).click()
     #ActionChains(driver).key_down(Keys.CONTROL).click(click_item).perform()
     #獲取當前的Handle,並且切換到另外一個handle來處理PVC
     main_handle = driver.current_window_handle
@@ -178,7 +187,7 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
             driver.switch_to.window(driver.window_handles[get_window_handle_num-number-1])
             driver.get(RANCHER_ip)
             WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div:nth-child(6) > div > i"))).click()
-            WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(4) > a > span"))).click()
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(4) > a > span"))).click()
             #在PVC點選Create
             logging_config.debug("點選create")
             driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a").click()
@@ -379,11 +388,11 @@ if __name__ == "__main__":
     while DO_WHILE_FLAG:
         DO_WHILE_FLAG = False
         try:
-            WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
         except TimeoutException:
             try:
                 #從Active Directory切換到local user 
-                WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
+                WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
             except TimeoutException:
                 driver.refresh()
                 DO_WHILE_FLAG = True
@@ -405,6 +414,7 @@ if __name__ == "__main__":
                     logging_config.debug(f"project_id_item.text = {project_id_item.text}")
                     if project_id_item.text == "Only User Namespaces":
                         project_id_item.click()
+                        driver.find_element(By.CSS_SELECTOR,"div.ns-filter > div > div").click()
                         break
         except NoSuchElementException:
             driver.refresh()
@@ -415,10 +425,10 @@ if __name__ == "__main__":
     #
     WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div:nth-child(3) > div > h6"))).click()
 
-    WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span"))).click()
+    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span"))).click()
 
     #點選chart中的App
-    WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(2) > h4.name")))
+    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(2) > h4.name")))
 
     #開始安裝App
     csv_data_dict['App Name'] = install_from_chart_to_app_deploy(args_2.app_name,args_2.suf,args_2.name_space)
@@ -482,16 +492,33 @@ if __name__ == "__main__":
                         GET_PVC_NAME = ""
                         #有兩種選單,一種是要指令Storage Class,另一種要指定PVC
                         if str(json_option).startswith("StorageClass"):
-                            GET_PVC_NAME = "local-replica2-delay-bind"
+                            #GET_PVC_NAME = "local-replica2-delay-bind"
+                            get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass")
+                            for item in get_storage_class_list:   
+                                if str(item).find("(default)") > 0:
+                                    GET_PVC_NAME = item[0:str(item).find("(default)")].replace(" ","")
+                                    logging_config.info(f"從底層獲得預設Storage Class{GET_PVC_NAME}")
                             #如果有找到Storage Class相關設定,就採用設定值,如果沒有就使用預設值
                             if test_dict["Storage"].get("StorageClass for Database *",False):
-                                GET_PVC_NAME = str(test_dict["Storage"]["StorageClass for Database *"])
-                                logging_config.info(f"找到Storage Class設定值 = {GET_PVC_NAME}")
+                                if str(test_dict["Storage"]["StorageClass for Database *"]) != "":
+                                    GET_PVC_NAME = str(test_dict["Storage"]["StorageClass for Database *"])
+                                logging_config.info(f"在json中找到Storage Class設定值 = {GET_PVC_NAME}")
                         else:
-                            GET_PVC_NAME = create_pvc(select_name_space=args_2.name_space)
+                            if test_dict['Storage'].get(str(json_option),False):
+                                meta_get_pvc_name = test_dict['Storage'][str(json_option)]
+                                logging_config.info(f"json pvc 設定名稱{meta_get_pvc_name}")
+                                GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name)
+                            else:
+                                GET_PVC_NAME = create_pvc(select_name_space=args_2.name_space)
                             logging_config.info(f"收到的PVC名稱{GET_PVC_NAME}")
                             logging_config.debug(f"i={i}")
-                        get_options[i+1].click()
+                        try:
+                            get_options[i+1].click()
+                        except ElementClickInterceptedException:
+                            element = get_options[i+1]
+                            actions = ActionChains(driver)
+                            actions.move_to_element(element).perform()
+                            driver.execute_script("$(arguments[0]).click()",element)
                         get_pvc_list = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu > li.vs__dropdown-option")
                         for pvc_item in get_pvc_list:
                             logging_config.debug(f"pvc_item={pvc_item.text}")
@@ -539,7 +566,14 @@ if __name__ == "__main__":
                         logging_config.debug(e.msg)
                         logging_config.info(json_option)
                         #按完之後,會跳出選單
-                        get_options[i+1].find_element(By.CSS_SELECTOR,"div > div").click()
+                        try:
+                            get_options[i+1].find_element(By.CSS_SELECTOR,"div > div").click()
+                        except ElementClickInterceptedException:
+                            #WebDriverWait(get_options[i+1],30).until(EC.element_to_be_clickable((By.CSS_SELECTOR,"div > div"))).click()
+                            element = get_options[i+1].find_element(By.CSS_SELECTOR,"div > div")
+                            actions = ActionChains(driver)
+                            actions.move_to_element(element).perform()
+                            driver.execute_script("$(arguments[0]).click()",element)
                         storage_pvcs = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu > li")
                         for service_item in storage_pvcs:
                             logging_config.info(service_item.text)
