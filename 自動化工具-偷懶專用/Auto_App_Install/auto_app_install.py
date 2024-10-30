@@ -552,11 +552,19 @@ if __name__ == "__main__":
                         item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.DELETE)
                         if str(json_option) == "Static Virtual IP *":
                             get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
+                            while get_new_ip == None:
+                                get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
+                                logging_config.info("==從底層獲取IP失敗,請排除問題==")
+                                logging_config.info("==重試直到獲取IP為止==")
                             csv_data_dict['IP'] = get_new_ip
                             logging_config.info(f"IP 設定:{get_new_ip}")
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)
                         elif str(json_option) == "Static Virtual IP for MinIO *":
                             get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP for MinIO *'])
+                            while get_new_ip == None:
+                                get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
+                                logging_config.info("==從底層獲取IP失敗,請排除問題==")
+                                logging_config.info("==重試直到獲取IP為止==")
                             csv_data_dict['IP'] = get_new_ip
                             logging_config.info(f"IP 設定:{get_new_ip}")
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)

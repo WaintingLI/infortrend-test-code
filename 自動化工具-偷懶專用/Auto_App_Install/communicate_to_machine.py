@@ -8,6 +8,7 @@ import datetime
 import paramiko
 import logging_config
 import string_2_ascii
+from paramiko.ssh_exception import SSHException
 
 #切換命令提示字元到Python檔案所在的目錄
 #檢查當前工作路徑是否在Python檔案的所在地,如果是就不會切換目錄
@@ -82,6 +83,8 @@ def all_node_to_connect_k8s(dilver_command:str='kubectl get service -n test-for-
             #print("get_cluster_used_ip =",get_cluster_used_ip)
             break
         except TimeoutError:
+            logging_config.info(f"Node Connect {node_ip} Fail")
+        except SSHException:
             logging_config.info(f"Node Connect {node_ip} Fail")
     else:
         logging_config.critical("All node ip can not connect ")
