@@ -112,24 +112,25 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
             driver.find_element(By.CSS_SELECTOR,"main > div > div.chart-header > div.name-logo-install > button").click()
 
             #點選NameSpace
-            while True: 
-                try:
-                    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")))
-                    break
-                except TimeoutException:
-                    pass
-            #driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions").click()
-            namespace_button = driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")
-            driver.execute_script("$(arguments[0]).click()",namespace_button)
+            click_namespace_flag = True
+            while click_namespace_flag:
+                click_namespace_flag = False
+                #driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions").click()
+                namespace_button = driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")
+                driver.execute_script("$(arguments[0]).click()",namespace_button)
 
-            #開啟NameSpace清單
-            #vs__dropdown-menu vs__dropdown-up
-            css_selector="ul.vs__dropdown-menu.vs__dropdown-up"
-            try:
-                WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
-            except  TimeoutException:
-                css_selector="ul.vs__dropdown-menu"
-                WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                #開啟NameSpace清單
+                #vs__dropdown-menu vs__dropdown-up
+                css_selector="ul.vs__dropdown-menu.vs__dropdown-up"
+                try:
+                    WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                except  TimeoutException:
+                    try:
+                        css_selector="ul.vs__dropdown-menu"
+                        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                    except TimeoutException:
+                        click_namespace_flag =True
+                        
             namespace_list = driver.find_elements(By.CSS_SELECTOR,css_selector + "> li")
             for app_item in namespace_list:
                 logging_config.debug(app_item.text)
@@ -493,7 +494,9 @@ if __name__ == "__main__":
                         #有兩種選單,一種是要指令Storage Class,另一種要指定PVC
                         if str(json_option).startswith("StorageClass"):
                             #GET_PVC_NAME = "local-replica2-delay-bind"
-                            get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass")
+                            get_storage_class_list = []
+                            while not get_storage_class_list:
+                                get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass")
                             for item in get_storage_class_list:   
                                 if str(item).find("(default)") > 0:
                                     GET_PVC_NAME = item[0:str(item).find("(default)")].replace(" ","")
