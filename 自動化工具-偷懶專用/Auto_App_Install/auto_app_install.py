@@ -116,18 +116,20 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
             while click_namespace_flag:
                 click_namespace_flag = False
                 #driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions").click()
-                namespace_button = driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")
+                #namespace_button = driver.find_element(By.CSS_SELECTOR,"div#vs5__combobox > div.vs__actions")
+                #namespace_button = driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__actions")
+                namespace_button = driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__selected-options")
                 driver.execute_script("$(arguments[0]).click()",namespace_button)
 
                 #開啟NameSpace清單
                 #vs__dropdown-menu vs__dropdown-up
                 css_selector="ul.vs__dropdown-menu.vs__dropdown-up"
                 try:
-                    WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                    WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
                 except  TimeoutException:
                     try:
                         css_selector="ul.vs__dropdown-menu"
-                        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
+                        WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,css_selector)))
                     except TimeoutException:
                         click_namespace_flag =True
                         
@@ -191,7 +193,8 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
             WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(4) > a > span"))).click()
             #在PVC點選Create
             logging_config.debug("點選create")
-            driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a").click()
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a"))).click()
+            #driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a").click()
             get_pvc_namespace_name = driver.find_elements(By.CSS_SELECTOR,"form > div.resource-container.cru__content > div.row.mb-20 > div > div")
             #創建PVC旗標
             pvc_done_flage = False
@@ -397,12 +400,16 @@ if __name__ == "__main__":
             except TimeoutException:
                 driver.refresh()
                 DO_WHILE_FLAG = True
-                sleep(3)    
-        driver.find_element(By.CSS_SELECTOR,"input#username").send_keys(ADMIN_USERNAME)
-        driver.find_element(By.CSS_SELECTOR,"input[type=\"password\"]").send_keys(ADMIN_PASSWORD)
-        sleep(1)
-        driver.find_element(By.CSS_SELECTOR,"button#submit").click()
-        sleep(3)
+                sleep(3)
+        try:
+            driver.find_element(By.CSS_SELECTOR,"input#username").send_keys(ADMIN_USERNAME)
+            driver.find_element(By.CSS_SELECTOR,"input[type=\"password\"]").send_keys(ADMIN_PASSWORD)
+            sleep(1)
+            driver.find_element(By.CSS_SELECTOR,"button#submit").click()
+            sleep(3)
+        except NoSuchElementException:
+            #可能已經登入
+            pass
 
         #將Project id 固定為"Only User Namespaces"
         try:
