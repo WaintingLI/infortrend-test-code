@@ -1,7 +1,7 @@
 {
     "General":{},
     "Storage":{
-		"PVC for Redmine *":"test"
+		"PVC for Redmine *":"redmine-pvc"
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",

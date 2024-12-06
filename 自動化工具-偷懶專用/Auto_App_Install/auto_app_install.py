@@ -648,6 +648,16 @@ if __name__ == "__main__":
     #安裝App
     driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
 
+    #確認App是否安裝了,在嘗試確認100次後,都沒有就不會自動關閉瀏覽器
+    for i in range(100):
+        logging_config.info(f"確認App是否安裝,檢查次數{i+1}")
+        if communicate_to_machine.check_app_pending(csv_data_dict['App Name'],args_2.name_space):
+            break
+        sleep(1)
+    else:
+        logging_config.info(f"\"{csv_data_dict['App Name']}\"無法在{args_2.name_space}確認正在安裝(Pending)")
+
+
     #倒數關閉
     logging_config.info("即將關閉瀏覽器")
     

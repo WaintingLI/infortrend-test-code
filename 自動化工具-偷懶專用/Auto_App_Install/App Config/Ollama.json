@@ -1,11 +1,13 @@
 {
-    "General":{},
+    "General":{
+		"GPU":"0.1"
+	},
     "Storage":{
-		"StorageClass for Database *":""
+		"PVC for Ollama *":"ollama-pvc"
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
-		"Static Virtual IP *":"172.24.128.175"
+		"Static Virtual IP *":"172.24.128.178"
     },
     "APP setting":{}
 }

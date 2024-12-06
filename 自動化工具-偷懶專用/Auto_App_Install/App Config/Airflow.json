@@ -1,11 +1,11 @@
 {
     "General":{},
     "Storage":{
-		"StorageClass for Database *":""
+		"PVC for Dags":"airflow-pvc"
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
-		"Static Virtual IP *":"172.24.128.175"
+		"Static Virtual IP *":"172.24.128.174"
     },
     "APP setting":{}
 }

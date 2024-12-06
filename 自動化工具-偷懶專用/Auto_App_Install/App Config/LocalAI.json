@@ -1,0 +1,13 @@
+{
+    "General":{
+		"App replicas *":"1"
+	},
+    "Storage":{
+		"PVC for LocalAI Models *":"localai-model-pvc"
+	},
+    "Service":{
+        "App Service Type *":"LoadBalancer",
+		"Static Virtual IP *":"172.24.128.177"
+    },
+    "APP setting":{}
+}

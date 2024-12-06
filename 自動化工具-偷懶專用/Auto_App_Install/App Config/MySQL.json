@@ -3,7 +3,7 @@
     "Storage":{},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
-		"Static Virtual IP *":"172.24.128.171"
+		"Static Virtual IP *":"172.24.128.170"
     },
     "APP setting":{}
 }

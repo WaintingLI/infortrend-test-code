@@ -96,7 +96,6 @@ def all_node_to_connect_k8s(dilver_command:str='kubectl get service -n test-for-
     return get_terminal_data
 
 def get_app_ip_data(app_name:str="sqlserver",app_at_namespace:str="test-for-long-1"):
-    
     #獲得該Name Space 下的所有App資料(未整理)
     transfer_command = "kubectl get service -n " + app_at_namespace
     get_meta_data = all_node_to_connect_k8s(transfer_command)
@@ -130,11 +129,33 @@ def get_app_ip_data(app_name:str="sqlserver",app_at_namespace:str="test-for-long
             continue
         print("item_2=",str(item_2)[str(item_2).find("https://"):str(item_2).rfind(":")])
     return get_str_data
-            
+
+def check_app_pending(app_name:str="sqlserver",app_namespace:str="test-for-app-1") -> bool:
+    """確認App是否已經開始安裝,主要是用來防範自動化安裝App時,遇到App沒有成功安裝的問題
+    Args:
+        app_name (str, optional): 安裝App的名稱. Defaults to "sqlserver".
+        app_namespace (str, optional): 安裝App的Name Space. Defaults to "test-for-app-1".
+
+    Returns:
+        bool: True代表有安裝;False代表沒有
+    """
+    sned_command = "helm list --pending -n " + str(app_namespace) + " | grep \"" + str(app_name) + "\""
+    get_answer = all_node_to_connect_k8s(sned_command)
+    if get_answer == ['']:
+        return False
+    else:
+        return True
 
 if __name__ == "__main__":
+    print(check_app_pending("localai-test","test-for-app-7"))
+    sys.exit(0)
     command = "kubectl get storageclass"
+    command = " helm list  -n test-for-app-1 | grep " + "ollama-basd"
     get_list = all_node_to_connect_k8s(command)
+    if get_list == ['']:
+        print("Nothing")
+    else:
+        print(get_list)
     for item in get_list:
         if str(item).find("(default)") > 0:
             print(item[0:str(item).find("(default)")])
