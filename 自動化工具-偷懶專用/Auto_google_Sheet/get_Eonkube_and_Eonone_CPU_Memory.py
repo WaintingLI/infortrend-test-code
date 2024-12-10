@@ -1,5 +1,5 @@
 '''
-用來自動化填寫紀錄Overnigt測試結果
+用來自動化測試Rocket Chat
 '''
 from time import sleep
 import sys
@@ -118,6 +118,7 @@ if __name__ == "__main__":
             node_name = node_table.find_element(By.CSS_SELECTOR,"td:nth-child(3)").text
             node_cpu = node_table.find_element(By.CSS_SELECTOR,"td:nth-child(8)").text
             node_ram = node_table.find_element(By.CSS_SELECTOR,"td:nth-child(9)").text
+            node_gpu = node_table.find_element(By.CSS_SELECTOR,"td:nth-child(10)").text
             print(node_name)
             string_to_ascii(node_name)
             Eonkube_node_list.append(node_name)
@@ -130,6 +131,10 @@ if __name__ == "__main__":
             string_to_ascii(node_ram)
             Eonkube_node_list.append(", Memory: ")
             Eonkube_node_list.append(node_ram)
+            print(node_gpu)
+            string_to_ascii(node_gpu)
+            Eonkube_node_list.append(", GPU: ")
+            Eonkube_node_list.append(node_gpu)
             Eonkube_node_list.append("\n\n")
             print("========================")
         else:
