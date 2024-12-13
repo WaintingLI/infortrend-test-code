@@ -137,6 +137,7 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
             for app_item in namespace_list:
                 logging_config.debug(app_item.text)
                 if app_item.text == namespace:
+                    ActionChains(driver).move_to_element(app_item).perform()
                     app_item.click()
                     break
             else:
