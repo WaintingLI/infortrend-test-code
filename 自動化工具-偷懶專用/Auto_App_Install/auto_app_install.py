@@ -165,6 +165,8 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
         logging_config.info("沒有找到App ==>"+ app_name)
         logging_config.info("字串對應的hex")
         string_2_ascii.string_to_hex(app_name)
+        logging_config.info("=======App Not Found=======")
+        sys.exit(0)
         return None
     return write_app_name
 
