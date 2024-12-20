@@ -69,6 +69,8 @@ cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
 RANCHER_ip = cf.get("Eonkube_Info","Rancher_ip")
 ADMIN_USERNAME = cf.get("Eonkube_Info","Admin_Username")
 ADMIN_PASSWORD = cf.get("Eonkube_Info","Admin_Password")
+DEFAULT_CHART = cf.get("Charts_Info","Default_chart",fallback="All")
+
 
 def export_csv_file(get_dict_data:dict) -> None:
     """將App資料以CSV方式儲存在本地位置
@@ -437,7 +439,28 @@ if __name__ == "__main__":
     WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div:nth-child(3) > div > h6"))).click()
 
     WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span"))).click()
+    chart_button = driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span")
+    
+    #點選App Charts中的 ALL
+    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.left-right-split > div.unlabeled-select.checkbox-select.edit")))
+    get_chart_name = driver.find_element(By.CSS_SELECTOR,"div.left-right-split > div.unlabeled-select.checkbox-select.edit")
+    
+    logging_config.info(f"Current Chart: {get_chart_name.text}")
+    if get_chart_name.text != DEFAULT_CHART:
+        get_chart_name.click()
+        get_chart_list = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu[role=\"listbox\"] > li[role=\"option\"]")
+        for chart in get_chart_list:
+            if chart.text == DEFAULT_CHART:
+                chart.find_element(By.CSS_SELECTOR,"div > label").click()
+                logging_config.info(f"Alter Chart: {DEFAULT_CHART}")
+                break
+            #print("chart =>",chart.text)
+            #string_2_ascii.string_to_hex(chart.text)
+            #print("=========")
+        else:
+            logging_config.info(f"Default Chart \"{DEFAULT_CHART}\" not found")
 
+    chart_button.click()
     #點選chart中的App
     WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(2) > h4.name")))
 
