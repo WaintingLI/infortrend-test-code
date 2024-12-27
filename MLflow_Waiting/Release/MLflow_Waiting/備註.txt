@@ -1,0 +1,3 @@
+※mlflow安裝需要Microsoft C++ Build Tools中的使用C++的桌面開發
+※torch不能使用太欣的Python版本,當前使用Python 3.11.4
+※在安裝MLflow過程中會需要numpy==1.26.4
