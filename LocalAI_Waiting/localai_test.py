@@ -83,7 +83,7 @@ if __name__ == "__main__":
         messages[0]['content'] = get_string
         response =client.chat.completions.create(
             messages=messages,
-            model="meta-llama-3.1-8b-instruct"
+            model=MODULE_NAME
         )
         print(response.choices[0].message.content,";","呼叫次數剩餘:",quest_counter," 次")
 
