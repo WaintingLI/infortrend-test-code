@@ -377,6 +377,12 @@ if __name__ == "__main__":
         #刪除LoadBalancer的IP設定
         if test_dict["Service"]["App Image Service Type *"] != "LoadBalancer":
             test_dict["Service"].pop("Static Virtual IP *",None)
+    #針對LocalAI格式不一樣來作解決
+    if test_dict["Service"].get("App Service Type *",False):
+        test_dict["Service"]["App Service Type *"] = args_2.service_type
+        #刪除LoadBalancer的IP設定
+        if test_dict["Service"]["App Service Type *"] != "LoadBalancer":
+            test_dict["Service"].pop("Static Virtual IP *",None)
     #針對MinIO來跟改Service 的設定(因為名稱與)
     if test_dict["Service"].get("MinIO Web Service Type *",False):
         test_dict["Service"]["MinIO Web Service Type *"] = args_2.service_type
