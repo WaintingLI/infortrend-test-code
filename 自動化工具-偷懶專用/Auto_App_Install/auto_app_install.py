@@ -168,7 +168,6 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
         logging_config.info("字串對應的hex")
         string_2_ascii.string_to_hex(app_name)
         logging_config.info("=======App Not Found=======")
-        sys.exit(0)
         return None
     return write_app_name
 
@@ -472,7 +471,9 @@ if __name__ == "__main__":
 
     #開始安裝App
     csv_data_dict['App Name'] = install_from_chart_to_app_deploy(args_2.app_name,args_2.suf,args_2.name_space)
-    
+    if not csv_data_dict['App Name']:
+        driver.close()
+        sys.exit(0)
     print(test_dict)
     #依照不同功能來設定App
     while test_dict.get("General",False):
