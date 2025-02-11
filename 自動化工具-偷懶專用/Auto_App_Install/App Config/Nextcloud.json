@@ -1,0 +1,15 @@
+{
+    "General":{},
+    "Storage":{
+		"Select an existing PVC for nextcloud *":"nextcloud-pvc",
+		"Select an existing PVC for nextcloud data *":"nextcloud-data-pvc",
+		"StorageClass for mariadb *":""
+	},
+    "Service":{
+		"Ingress":{
+			"Nextcloud Ingress URL *":"nextcloud-test"
+		}
+        
+    },
+    "APP setting":{}
+}

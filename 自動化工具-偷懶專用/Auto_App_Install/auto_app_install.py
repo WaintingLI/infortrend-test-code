@@ -531,7 +531,7 @@ if __name__ == "__main__":
                         #==========================
                         #section#Storage >  div > div > div > div > div > div
                         GET_PVC_NAME = ""
-                        #有兩種選單,一種是要指令Storage Class,另一種要指定PVC
+                        #有兩種選單,一種是要指定Storage Class,另一種要指定PVC
                         if str(json_option).startswith("StorageClass"):
                             #GET_PVC_NAME = "local-replica2-delay-bind"
                             get_storage_class_list = []
@@ -574,17 +574,18 @@ if __name__ == "__main__":
     while test_dict.get("Service",False):
         driver.find_element(By.CSS_SELECTOR,"li#Service > a").click()
         get_options = driver.find_elements(By.CSS_SELECTOR,"section#Service >  div > div > div > div > div > div ")
+        #Service相關設定
         for i, item in enumerate(get_options):
             try:
                 logging_config.info(item.find_element(By.CSS_SELECTOR,"label").text)
             except NoSuchElementException as e:
                 logging_config.debug(e.msg)
-                logging_config.info(json_option)
+                #logging_config.info(json_option)
                 logging_config.debug("沒有Label相關元素,下一個資料")
                 continue
             except StaleElementReferenceException as e:
                 logging_config.debug(e.msg)
-                logging_config.info(json_option)
+                #logging_config.info(json_option)
                 logging_config.debug("沒有Label相關元素,下一個資料")
                 continue
             #(有選單的)設定Service Type
@@ -633,6 +634,28 @@ if __name__ == "__main__":
                                 service_item.click()
                                 break
                     break
+        #Service-Ingress相關設定
+        while(test_dict["Service"].get("Ingress",False)):
+            logging_config.info("IP Service Ingress Setting")
+            get_options = driver.find_elements(By.CSS_SELECTOR,"section#Service >  div > div > div > div > div ")
+            for item in get_options:
+                logging_config.info(item.find_element(By.CSS_SELECTOR,"label").text)
+                for json_option in list(test_dict['Service']['Ingress'].keys()):
+                    logging_config.info(f"App ingress config =>{json_option}")
+                    if item.find_element(By.CSS_SELECTOR,"label").text == str(json_option):
+                        get_ingress_name = test_dict['Service']['Ingress'][str(json_option)]
+                        logging_config.info(f"ingress name =>{get_ingress_name}")
+                        #使用亂數來創造名字
+                        string_nuber = 8
+                        print_string = ""
+                        get_str_list = random.sample('1234567890zyxwvutsrqponmlkjihgfedcba',string_nuber)
+                        for number in range(string_nuber):
+                            print_string = print_string + get_str_list[number]
+                        get_ingress_name = get_ingress_name + "-" + print_string
+                        item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.CONTROL+"a")
+                        item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.DELETE)
+                        item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_ingress_name)
+            break                        
         break
 
     while test_dict.get("APP setting",False):

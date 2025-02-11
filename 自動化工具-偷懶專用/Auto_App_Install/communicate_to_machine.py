@@ -141,7 +141,8 @@ def check_app_pending(app_name:str="sqlserver",app_namespace:str="test-for-app-1
     """
     sned_command = "helm list --pending -n " + str(app_namespace) + " | grep \"" + str(app_name) + "\""
     get_answer = all_node_to_connect_k8s(sned_command)
-    if get_answer == ['']:
+    #print("get_answer =",get_answer,type(get_answer))
+    if not get_answer or get_answer == ['']:
         return False
     else:
         return True
