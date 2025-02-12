@@ -46,4 +46,6 @@ if __name__ == "__main__":
         #print("Stack trace : %s" %stack_trace)
         for item in stack_trace:
             print(item)
+        #跟沒有加Try...exception 的訊息一樣
+        traceback.print_exc()
         
