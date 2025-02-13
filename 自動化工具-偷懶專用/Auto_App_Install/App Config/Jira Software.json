@@ -1,0 +1,12 @@
+{
+    "General":{},
+    "Storage":{
+		"PVC for the SharedHome of Jira Software *":"jira-pvc"
+	},
+    "Service":{
+        "Ingress":{
+			"Jira Software Web URL *":"jira-web"
+		}
+    },
+    "APP setting":{}
+}

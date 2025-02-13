@@ -1,0 +1,11 @@
+{
+    "General":{},
+    "Storage":{
+		"PVC for MinIO *":"ragflow-pvc"
+	},
+    "Service":{
+        "App Service Type *":"LoadBalancer",
+		"Static Virtual IP *":"172.24.128.173"
+    },
+    "APP setting":{}
+}
