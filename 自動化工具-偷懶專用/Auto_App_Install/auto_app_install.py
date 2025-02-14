@@ -193,8 +193,10 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
         if driver.window_handles[get_window_handle_num-number-1] != main_handle:
             driver.switch_to.window(driver.window_handles[get_window_handle_num-number-1])
             driver.get(RANCHER_ip)
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div:nth-child(6) > div > i"))).click()
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(4) > a > span"))).click()
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User"))).click()
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(3)"))).click()
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(3)> ul > li:nth-child(3)"))).click()
+            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(3)> ul > li:nth-child(3)> div > ul > li:nth-child(4)"))).click()
             #在PVC點選Create
             logging_config.debug("點選create")
             WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a"))).click()
@@ -439,12 +441,14 @@ if __name__ == "__main__":
             DO_WHILE_FLAG = True
             sleep(3)
 
-    #點選App > chart
-    #
-    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div:nth-child(3) > div > h6"))).click()
 
-    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span"))).click()
-    chart_button = driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > nav > div.nav > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span")
+    #點選User
+    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User"))).click()
+    #點選App 
+    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(1)"))).click()
+    #點選chart(Market Placement)
+    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span"))).click()
+    chart_button = driver.find_element(By.CSS_SELECTOR,"section#User > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span")
     
     #點選App Charts中的 ALL
     WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.left-right-split > div.unlabeled-select.checkbox-select.edit")))
