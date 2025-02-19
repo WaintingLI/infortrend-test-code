@@ -62,8 +62,9 @@ driver.implicitly_wait(10)
 cf=configparser.ConfigParser()
 cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
 E_FLOW_ip = cf.get("APP_Info","E_FLOW_ip")
+USER = cf.get("APP_Info","Admin_Username")
+USER_PASSWORD = cf.get("APP_Info","Admin_Password")
 
-#獲取使用者資料
 
 
 
@@ -96,15 +97,15 @@ if __name__ == "__main__":
 
     #開啟網址
     driver.get(E_FLOW_ip)
-    
-    
+
+
     #登入
     WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
-    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys("輸入自己帳號")
-    driver.find_element(By.CSS_SELECTOR,"input#Password").send_keys("輸入自己密碼")
+    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys(USER)
+    driver.find_element(By.CSS_SELECTOR,"input#Password").send_keys(USER_PASSWORD)
     driver.find_element(By.CSS_SELECTOR,"button.btn.btn-default").click()
-    sleep(3)
-    
+    sleep(10)
+
     #檢查有多少加班清單
     new_tab_num = 0
     overtime_check_list = driver.find_elements(By.CSS_SELECTOR,"table#ContentPlaceHolder1_gvToDoList > tbody > tr")
@@ -112,6 +113,7 @@ if __name__ == "__main__":
         try:
             Subject = item.find_element(By.CSS_SELECTOR,"td.Subject")
             print("Subject =",Subject.text)
+            #有加班申請有出現"Verification Sec. Ⅰ : Hank.Su Applys 加班申請單"
             if Subject.text =="Verification Sec. Ⅰ : Waiting.Lee Applys 加班申請單":
                 print("Pass")
                 new_tab_num =+ 1
