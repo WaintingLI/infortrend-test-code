@@ -92,7 +92,7 @@ if __name__ == "__main__":
     
     #登入
     try:
-        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
+        WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
     except TimeoutException:
         #從Active Directory切換到local user
         WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
@@ -165,9 +165,13 @@ if __name__ == "__main__":
     #Get info 
     WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR,"div.flex_center > div > div.capacity-body-content")))
     Eonone_cluster_list.append("EonOne Monitor\n")
-    Cluster_info =driver.find_elements(By.CSS_SELECTOR,"div.flex_center > div > div.capacity-body-content")
-    Cluster_cpu = Cluster_info[0].text
-    Cluster_ram = Cluster_info[1].text
+    while True:
+        Cluster_info =driver.find_elements(By.CSS_SELECTOR,"div.flex_center > div > div.capacity-body-content")
+        Cluster_cpu = Cluster_info[0].text
+        Cluster_ram = Cluster_info[1].text
+        if Cluster_cpu == "0%" or Cluster_ram == "0%":
+            continue
+        break
     print("Cluster CPU:", Cluster_cpu)
     Eonone_cluster_list.append("CPU:")
     Eonone_cluster_list.append(Cluster_cpu)
