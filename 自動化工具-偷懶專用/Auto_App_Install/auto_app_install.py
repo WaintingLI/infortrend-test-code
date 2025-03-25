@@ -309,6 +309,34 @@ def create_args() -> dict:
         metavar="xxxxx",
         help="輸入App名稱後面的修飾詞(都是英文小寫) (default: balancer)"
     )
+    parser.add_argument(
+        "--OTHER_USR",
+        type=str,
+        default="None",
+        metavar="xxxxx",
+        help="輸入要登入的使用者名稱,不輸入,則不修改登入使用者 (default: None)"
+    )
+    parser.add_argument(
+        "--OTHER_PWD",
+        type=str,
+        default="None",
+        metavar="xxxxx",
+        help="輸入要登入的使用者密碼,不輸入,則不修改登入密碼 (default: None)"
+    )
+    parser.add_argument(
+        "--LDAP_USR",
+        type=str,
+        default="None",
+        metavar="xxxxx",
+        help="輸入LDAP使用者名稱,不輸入,則不使LDAP登入 (default: None)"
+    )
+    parser.add_argument(
+        "--LDAP_PWD",
+        type=str,
+        default="None",
+        metavar="xxxxx",
+        help="輸入LDAP使用者密米,不輸入,則不使LDAP登入 (default: None)"
+    )
     args = parser.parse_args()
     logging_config.info("Arguments:")
     for arg in vars(args):
@@ -322,6 +350,11 @@ if __name__ == "__main__":
     #設定Arugment
     args_2 = create_args()
 
+    #修改使用者登入資訊
+    if args_2.OTHER_USR != "None":
+        ADMIN_USERNAME =args_2.OTHER_USR
+    if args_2.OTHER_PWD != "None":
+        ADMIN_PASSWORD = args_2.OTHER_PWD
 
     #啟動chrome
     driver = webdriver.Chrome(service=service, options=options)
@@ -400,6 +433,39 @@ if __name__ == "__main__":
     driver.get(RANCHER_ip)
     #登入
     #登入EonKube
+    ##OpenLDAP登入-Start
+    EONKUBE_LDAP_USER = args_2.LDAP_USR
+    EONKUBE_LDAP_PASSWORD = args_2.LDAP_PWD
+    while EONKUBE_LDAP_USER != "None" and EONKUBE_LDAP_PASSWORD != "None":
+        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div > button")))
+        get_login_button = driver.find_element(By.CSS_SELECTOR,"div > button")
+        if get_login_button.text != "Log in with OpenLDAP":
+            logging_config.info("======End LDAP Login=====")
+            logging_config.info("======No LDAP MODE=====")
+            driver.close()
+            sys.exit(0)
+        get_login_list = driver.find_elements(By.CSS_SELECTOR,"div.labeled")
+        for item in get_login_list:
+            string_2_ascii.string_to_hex(item.text)
+            if item.text == "Username":
+                item.find_element(By.CSS_SELECTOR,"div > input").send_keys(EONKUBE_LDAP_USER)
+            elif item.text == "Password":
+                item.find_element(By.CSS_SELECTOR,"div > input").send_keys(EONKUBE_LDAP_PASSWORD)
+            else:
+                print("get nothing")
+        get_login_button.click()
+        try:
+            WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.banner__content")))
+            LOGIN_ERROR_MESSAGE = driver.find_element(By.CSS_SELECTOR,"div.banner__content").text
+            logging_config.info(f"Error Message:{LOGIN_ERROR_MESSAGE}")
+            logging_config.info("======End LDAP Login=====")
+            driver.close()
+            sys.exit(0)
+        except TimeoutException:
+            pass
+        #LDAP登入流程結束
+        break
+    ##OpenLDAP登入-end
     DO_WHILE_FLAG = True
     while DO_WHILE_FLAG:
         DO_WHILE_FLAG = False
