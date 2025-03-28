@@ -151,14 +151,14 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
             write_app_name = ""
             #將名稱都轉成小寫英文字母
             for character in app_name:
-                if ord(character) < 97 and ord(character) != 0x20:
+                if ord(character) < 90 and ord(character) >= 65:
                     write_app_name = write_app_name + chr(ord(character) + 32)
-                else:
+                elif (ord(character) <= 0x7A and ord(character) >= 0x61) or ord(character) == 0x2D:
                     write_app_name = write_app_name + character
             if service_type != "":
                 write_app_name = write_app_name + "-" + service_type
             #移除空格(Space)
-            write_app_name = write_app_name.replace(" ","")
+            #write_app_name = write_app_name.replace(" ","")
             driver.find_element(By.CSS_SELECTOR,"div.labeled > div > input[placeholder=\"A unique name\"]").send_keys(write_app_name)
             #點選Next
             driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button > span").click()
