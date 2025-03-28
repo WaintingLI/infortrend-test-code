@@ -38,7 +38,7 @@ def get_kubectl_ip(connect_ip:str='172.24.128.111') -> list:
     ssh.connect(hostname=connect_ip, username="root", password="ABcd_1234",timeout=1)
 
     #stdin, stdout, stderr = ssh.exec_command('ls -l')
-    stdin, stdout, stderr = ssh.exec_command('kubectl get service --all-namespaces | grep "172.24.128."  | awk \'{print $5}\'')
+    stdin, stdout, stderr = ssh.exec_command('kubectl get service --all-namespaces | awk \'{print $5}\' | grep -v "none"')
     #sftp = ssh.open_sftp()
     #localpath = 'srcFile.txt'
     #remotepath = '/folder/srcFile.txt'
