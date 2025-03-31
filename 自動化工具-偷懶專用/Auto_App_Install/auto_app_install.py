@@ -335,7 +335,14 @@ def create_args() -> dict:
         type=str,
         default="None",
         metavar="xxxxx",
-        help="輸入LDAP使用者密米,不輸入,則不使LDAP登入 (default: None)"
+        help="輸入LDAP使用者密碼,不輸入,則不使LDAP登入 (default: None)"
+    )
+    parser.add_argument(
+        "--SELECT_CHART",
+        type=str,
+        default="None",
+        metavar="xxxxx",
+        help="輸入想要使用的Chart Server (default: None)"
     )
     args = parser.parse_args()
     logging_config.info("Arguments:")
@@ -356,6 +363,10 @@ if __name__ == "__main__":
     if args_2.OTHER_PWD != "None":
         ADMIN_PASSWORD = args_2.OTHER_PWD
 
+
+    #修改要使用的Chart Server
+    if args_2.SELECT_CHART != "None":
+        DEFAULT_CHART = args_2.SELECT_CHART
     #啟動chrome
     driver = webdriver.Chrome(service=service, options=options)
     #隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
@@ -524,20 +535,43 @@ if __name__ == "__main__":
     if get_chart_name.text != DEFAULT_CHART:
         get_chart_name.click()
         get_chart_list = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu[role=\"listbox\"] > li[role=\"option\"]")
+        #先檢查是否有該Chart Server
         for chart in get_chart_list:
             if chart.text == DEFAULT_CHART:
-                chart.find_element(By.CSS_SELECTOR,"div > label").click()
-                logging_config.info(f"Alter Chart: {DEFAULT_CHART}")
+                #chart.find_element(By.CSS_SELECTOR,"div > label").click()
+                #logging_config.info(f"Alter Chart: {DEFAULT_CHART}")
                 break
             #print("chart =>",chart.text)
             #string_2_ascii.string_to_hex(chart.text)
             #print("=========")
         else:
             logging_config.info(f"Default Chart \"{DEFAULT_CHART}\" not found")
+            driver.close()
+            sys.exit(0)
+        #選擇指定的Chart Server,並且將其他改取消勾選
+        for chart in get_chart_list:
+            if chart.text == DEFAULT_CHART:
+                is_check = chart.find_element(By.CSS_SELECTOR,"div > label > span").get_attribute("aria-checked")
+                if not is_check:
+                    chart.find_element(By.CSS_SELECTOR,"div > label").click()
+                    logging_config.info(f"Alter Chart: {DEFAULT_CHART}")
+                if chart.text =="All" and DEFAULT_CHART == "All":
+                    break
+            else:
+                #其他Chart Server有勾選起來要取消
+                is_check = chart.find_element(By.CSS_SELECTOR,"div > label > span").get_attribute("aria-checked")
+                if is_check:
+                    chart.find_element(By.CSS_SELECTOR,"div > label").click()
+                
 
     chart_button.click()
     #點選chart中的App
-    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(2) > h4.name")))
+    try:
+        WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(1) > h4.name")))
+    except TimeoutException:
+        logging_config.info("There is no app")
+        logging_config.info("====END====")
+        driver.close()
 
     #開始安裝App
     csv_data_dict['App Name'] = install_from_chart_to_app_deploy(args_2.app_name,args_2.suf,args_2.name_space)
