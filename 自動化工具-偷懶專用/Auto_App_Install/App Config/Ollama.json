@@ -1,6 +1,6 @@
 {
     "General":{
-		"GPU":"0.1"
+		"GPU":"1"
 	},
     "Storage":{
 		"PVC for Ollama *":"ollama-pvc"
