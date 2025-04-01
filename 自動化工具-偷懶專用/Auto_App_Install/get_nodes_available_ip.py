@@ -107,7 +107,7 @@ def get_available_cluster_ip(will_set_ip:str="172.24.128.170") -> str:
         else:
             available_ip_list.append(get_available_ip)
     if len(available_ip_list) < 1:
-        return None
+        return "None ip can be available"
     get_check_ip = check_ip.replace(" ","")
     for item in available_ip_list:
         if item == get_check_ip:

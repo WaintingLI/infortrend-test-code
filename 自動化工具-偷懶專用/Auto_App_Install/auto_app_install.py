@@ -706,6 +706,11 @@ if __name__ == "__main__":
                                 logging_config.info("==重試直到獲取IP為止==")
                             csv_data_dict['IP'] = get_new_ip
                             logging_config.info(f"IP 設定:{get_new_ip}")
+                            #沒有找到可用的IP
+                            if get_new_ip == "None ip can be available":
+                                logging_config.info("There is no ip available")
+                                driver.close()
+                                sys.exit(0)
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)
                         elif str(json_option) == "Static Virtual IP for MinIO *":
                             get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP for MinIO *'])
@@ -715,6 +720,11 @@ if __name__ == "__main__":
                                 logging_config.info("==重試直到獲取IP為止==")
                             csv_data_dict['IP'] = get_new_ip
                             logging_config.info(f"IP 設定:{get_new_ip}")
+                            #沒有找到可用的IP
+                            if get_new_ip == "None ip can be available":
+                                logging_config.info("There is no ip available")
+                                driver.close()
+                                sys.exit(0)
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)
                         else:
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(test_dict['Service'][str(json_option)])
