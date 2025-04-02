@@ -328,14 +328,14 @@ def create_args() -> dict:
         type=str,
         default="None",
         metavar="xxxxx",
-        help="輸入LDAP使用者名稱,不輸入,則不使LDAP登入 (default: None)"
+        help="輸入LDAP or ActiveDirectory使用者名稱,不輸入,則不使LDAP or ActiveDirectory登入 (default: None)"
     )
     parser.add_argument(
         "--LDAP_PWD",
         type=str,
         default="None",
         metavar="xxxxx",
-        help="輸入LDAP使用者密碼,不輸入,則不使LDAP登入 (default: None)"
+        help="輸入LDAP or ActiveDirectory使用者密碼,不輸入,則不使LDAPor ActiveDirectory登入 (default: None)"
     )
     parser.add_argument(
         "--SELECT_CHART",
@@ -447,12 +447,14 @@ if __name__ == "__main__":
     ##OpenLDAP登入-Start
     EONKUBE_LDAP_USER = args_2.LDAP_USR
     EONKUBE_LDAP_PASSWORD = args_2.LDAP_PWD
+    DO_WHILE_FLAG = True
     while EONKUBE_LDAP_USER != "None" and EONKUBE_LDAP_PASSWORD != "None":
+        DO_WHILE_FLAG = False
         WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div > button")))
         get_login_button = driver.find_element(By.CSS_SELECTOR,"div > button")
-        if get_login_button.text != "Log in with OpenLDAP":
-            logging_config.info("======End LDAP Login=====")
-            logging_config.info("======No LDAP MODE=====")
+        if get_login_button.text != "Log in with OpenLDAP" and get_login_button.text != "Log in with ActiveDirectory":
+            logging_config.info("======End LDAP or ActiveDirectory Login=====")
+            logging_config.info("======No LDAP or ActiveDirectory MODE=====")
             driver.close()
             sys.exit(0)
         get_login_list = driver.find_elements(By.CSS_SELECTOR,"div.labeled")
@@ -464,20 +466,25 @@ if __name__ == "__main__":
                 item.find_element(By.CSS_SELECTOR,"div > input").send_keys(EONKUBE_LDAP_PASSWORD)
             else:
                 print("get nothing")
-        get_login_button.click()
-        try:
-            WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.banner__content")))
-            LOGIN_ERROR_MESSAGE = driver.find_element(By.CSS_SELECTOR,"div.banner__content").text
-            logging_config.info(f"Error Message:{LOGIN_ERROR_MESSAGE}")
-            logging_config.info("======End LDAP Login=====")
-            driver.close()
-            sys.exit(0)
-        except TimeoutException:
-            pass
+        #解決登入鍵案太快的問題
+        while True:
+            try:
+                sleep(1) #加這個是因為會有Bug
+                get_login_button.click()
+                WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.banner.error > div.banner__content")))
+                LOGIN_ERROR_MESSAGE = driver.find_element(By.CSS_SELECTOR,"div.banner.error > div.banner__content").text
+                logging_config.info(f"Error Message:{LOGIN_ERROR_MESSAGE}")
+                logging_config.info("======End LDAP or ActiveDirectory Login=====")
+                driver.close()
+                sys.exit(0)
+            except TimeoutException:
+                pass
+            except StaleElementReferenceException:
+                break
         #LDAP登入流程結束
         break
     ##OpenLDAP登入-end
-    DO_WHILE_FLAG = True
+    #DO_WHILE_FLAG = True
     while DO_WHILE_FLAG:
         DO_WHILE_FLAG = False
         try:
@@ -488,6 +495,7 @@ if __name__ == "__main__":
                 WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
             except TimeoutException:
                 driver.refresh()
+                logging_config.info("Try to login local user")
                 DO_WHILE_FLAG = True
                 sleep(3)
         try:
