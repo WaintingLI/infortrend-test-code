@@ -18,8 +18,8 @@ if os.path.dirname(sys.argv[0]):
 #讀取檔案參數與全域變數
 cf=configparser.ConfigParser()
 cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
-#CLICKHOUSE_IP = cf.get("Clickhouse_Info","Clickhouse_ip")
-#CLICKHOUSE_IP_PORT = cf.getint("Clickhouse_Info","Clickhouse_ip_port")
+CLICKHOUSE_IP = cf.get("Clickhouse_Info","Clickhouse_ip")
+CLICKHOUSE_IP_PORT = cf.getint("Clickhouse_Info","Clickhouse_ip_port")
 USER = cf.get("Clickhouse_Info","User")
 USER_PASSWORD = cf.get("Clickhouse_Info","Password")
 DATABASE = cf.get("Clickhouse_Info","Database")
@@ -30,14 +30,14 @@ def create_args():
     parser.add_argument(
         "--ip",
         type=str,
-        default="172.24.128.165",
+        default=CLICKHOUSE_IP,
         metavar="N",
         help="input ipv4",
     )
     parser.add_argument(
         "--port",
         type=str,
-        default="8123",
+        default=CLICKHOUSE_IP_PORT,
         metavar="N",
         help="input ip port",
     )
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     client.close()
     try:
         client = clickhouse_connect.get_client(
-            host=CLICKHOUSE_IP,
-            port=CLICKHOUSE_IP_PORT,
+            host=args.ip,
+            port=args.port,
             username=USER,
             password=USER_PASSWORD,
             database=DATABASE)
