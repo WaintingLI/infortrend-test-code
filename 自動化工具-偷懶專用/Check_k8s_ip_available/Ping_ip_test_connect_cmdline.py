@@ -21,22 +21,22 @@ def create_args():
         "--ip",
         type=str,
         default="172.24.128.214",
-        metavar="N",
-        help="input ipv4",
+        metavar="IP",
+        help="Check ip from ... (default: \"172.24.128.214\")",
     )
     parser.add_argument(
         "--range",
         type=int,
         default="20",
-        metavar="N",
-        help="input ip range",
+        metavar="Number",
+        help="Check ip range (default: \"20\")  Example(using default): will check 172.24.128.214 ~ 172.24.128.233",
     )
     parser.add_argument(
         "--ssh_ip",
         type=str,
         default="172.24.128.151",
-        metavar="N",
-        help="input connect ssh ip",
+        metavar="ssh host",
+        help="one of k8s-clustered nodes ip (default: \"172.24.128.151\")",
     )
     parser_arguments = parser.parse_args()
     print("Arguments:")
