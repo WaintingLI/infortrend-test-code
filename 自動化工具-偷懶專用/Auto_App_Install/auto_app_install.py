@@ -12,6 +12,7 @@ import json
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
@@ -193,10 +194,7 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
         if driver.window_handles[get_window_handle_num-number-1] != main_handle:
             driver.switch_to.window(driver.window_handles[get_window_handle_num-number-1])
             driver.get(RANCHER_ip)
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User"))).click()
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(3)"))).click()
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(3)> ul > li:nth-child(3)"))).click()
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(3)> ul > li:nth-child(3)> div > ul > li:nth-child(4)"))).click()
+            select_control_ui(driver,"Advanced","Storage","PersistentVolumeClaims")
             #在PVC點選Create
             logging_config.debug("點選create")
             WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a"))).click()
@@ -349,6 +347,74 @@ def create_args() -> dict:
     for arg in vars(args):
         logging_config.info(f"  {arg}: {getattr(args, arg)}")
     return args
+
+
+def select_control_ui(uidriver:WebDriver,
+                      select_item_1:str="None",
+                      select_item_2:str="None",
+                      select_item_3:str="None"
+                      ) -> None:
+    """用來切換控制UI的副程式,當前會有兩種UI,一種是傳統,另一種是依照不同使用者權限來分類button
+    Args:
+        select_item_1 (str): _description_
+        select_item_2 (str): _description_
+    """
+    #依照不同的數值來辨別UI,0為傳統UI,1為依照使用者權限分類的UI
+    ui_type = 0
+    ##檢測是否為哪一種UI
+    try:
+        WebDriverWait(uidriver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User")))
+        ui_type = 1
+    except TimeoutException:
+        ui_type = 0
+    #print("ui_type => ",ui_type)
+    def click_loop(uiwebdriver:WebDriver,list_of_webelement:list,goal_click:str) -> None:
+        if goal_click == "None":
+            #logging_config.info(f"goal_click == {goal_click} will return")
+            return
+        for item_tab in list_of_webelement:
+            #print("item_tab.text =>",item_tab.text)
+            if goal_click == item_tab.text:
+                item_tab.click()
+                break
+        else:
+            logging_config.info(f"Not find {goal_click}")
+            logging_config.info("Close Driver")
+            logging_config.info("======END PROCEDURE=====")
+            uiwebdriver.close()
+    while ui_type == 0:
+        #傳統UI與依使用者權限分類差異
+        if  select_item_1 == "Dashboard" or select_item_1 == "Management" or select_item_1 == "Advanced":
+            select_item_1 = select_item_2
+            select_item_2 = select_item_3
+            select_item_3 = "None"
+        get_list = uidriver.find_elements(By.CSS_SELECTOR,"nav.side-nav > div > div")
+        click_loop(uidriver,get_list,select_item_1)
+        get_list = uidriver.find_elements(By.CSS_SELECTOR,"nav.side-nav > div > div > ul > li > a > span.label")
+        click_loop(uidriver,get_list,select_item_2)
+        break
+    while ui_type == 1:
+        #依使用者權限分類的UI
+        ##User類別:Apps、Virtualization、Advanced
+        ##Maintainer:Dashboard、Management(跟Admin不一樣)
+        ##Admin類別:Dashboard、Cluster、Management(跟Maintainer不一樣)
+        if select_item_1 == "Apps" or select_item_1 == "Virtualization" or select_item_1 == "Advanced":
+            WebDriverWait(uidriver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User"))).click()
+        elif select_item_1 == "Dashboard" or select_item_1 == "Management":
+            WebDriverWait(uidriver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#Maintainer"))).click()
+        elif select_item_1 == "Dashboard" or select_item_1 == "Cluster" or select_item_1 == "Management":
+            WebDriverWait(uidriver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#Admin"))).click()
+        #section > div > div
+        get_list = uidriver.find_elements(By.CSS_SELECTOR,"section[role=\"tabpanel\"] > div > div")
+        click_loop(uidriver,get_list,select_item_1)
+        get_list = uidriver.find_elements(By.CSS_SELECTOR,"section[role=\"tabpanel\"] > div > ul > li")
+        #快速連點會出現問題,ui會卡住,由於手動測試不會出現,所以加入delay,來等待
+        sleep(10)
+        click_loop(uidriver,get_list,select_item_2)
+        get_list = uidriver.find_elements(By.CSS_SELECTOR,"section[role=\"tabpanel\"] > div > ul > li > div > ul > li")
+        click_loop(uidriver,get_list,select_item_3)
+        break
+    
 
 if __name__ == "__main__":
 
@@ -526,15 +592,12 @@ if __name__ == "__main__":
             DO_WHILE_FLAG = True
             sleep(3)
 
+    #點選UI控制Tab
+    select_control_ui(driver,"Apps","Marketplace")
+    #select_control_ui(driver,"Apps","Installed Apps")
+    #select_control_ui(driver,"Advanced","Storage","PersistentVolumeClaims")
+    #sys.exit(0)
 
-    #點選User
-    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User"))).click()
-    #點選App 
-    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div:nth-child(1)"))).click()
-    #點選chart(Market Placement)
-    WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section#User > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span"))).click()
-    chart_button = driver.find_element(By.CSS_SELECTOR,"section#User > div.accordion.package.depth-0.expanded.has-children > ul > li:nth-child(1) > a > span")
-    
     #點選App Charts中的 ALL
     WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.left-right-split > div.unlabeled-select.checkbox-select.edit")))
     get_chart_name = driver.find_element(By.CSS_SELECTOR,"div.left-right-split > div.unlabeled-select.checkbox-select.edit")
@@ -571,8 +634,10 @@ if __name__ == "__main__":
                 if is_check:
                     chart.find_element(By.CSS_SELECTOR,"div > label").click()
                 
-
-    chart_button.click()
+    #決定Chart
+    #driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__actions").click()
+    chart_click = driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__actions")
+    ActionChains(driver).move_to_element(chart_click).click().perform()
     #點選chart中的App
     try:
         WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(1) > h4.name")))
