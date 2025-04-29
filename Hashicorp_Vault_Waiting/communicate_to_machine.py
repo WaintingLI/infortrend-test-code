@@ -6,6 +6,7 @@ import os
 import configparser
 import paramiko
 from paramiko.ssh_exception import SSHException
+import string_2_ascii
 
 #切換命令提示字元到Python檔案所在的目錄
 #檢查當前工作路徑是否在Python檔案的所在地,如果是就不會切換目錄
@@ -76,7 +77,12 @@ def all_node_to_connect_k8s(dilver_command:str='kubectl get service -n test-for-
         try:
             get_terminal_data = connect_kubectl_ip(node_ip,dilver_command)
             #print("get_cluster_used_ip =",get_cluster_used_ip)
-            break
+            #有資料才會結束
+            if get_terminal_data != ['']:
+                print("node_ip=",node_ip)
+                print("dilver_command=",dilver_command)
+                print("No Data")
+                break
         except TimeoutError:
             print(f"Node Connect {node_ip} Fail(TimeoutError)(com)")
         except SSHException:
@@ -182,8 +188,10 @@ def get_vault_root_token(app_name:str="vault",app_namespace:str="test-for-app-1"
 if __name__ == "__main__":
     #print(check_app_deployed("vault-n","test-for-app-test"))
     #kubectl get configmap -n test-for-app-test vault-n-keys-configmap -o yaml | grep root_token
-    if  get_vault_root_token("vault-n","test-for-app-test"):
-        print("pass")
+    get_data =all_node_to_connect_k8s("kubectl get configmap -n test-for-app-test vault-n1-keys-configmap -o yaml | grep root_token")
+    print(get_data,type(get_data))
+    if get_data != ['']:
+        print("Pass")
     else:
-        print("Nothing")
+        print("False")
     sys.exit(0)
