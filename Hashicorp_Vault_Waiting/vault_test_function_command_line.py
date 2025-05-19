@@ -71,6 +71,7 @@ if __name__ == "__main__":
 
     #獲取Root Token
     ROOT_TOKEN = communicate_to_machine.get_vault_root_token(args.app_name, args.app_name_space)
+    print("ROOT TOKEN =",ROOT_TOKEN)
     if not ROOT_TOKEN:
         print("沒有獲取ROOT_TOKEN,檢查App名稱或者Name Space是否有誤")
         sys.exit(1)
@@ -93,6 +94,8 @@ if __name__ == "__main__":
             print(SECRET_ENGINE,"已經有建立")
         else:
             print("錯誤訊息",e)
+    except hvac.exceptions.Forbidden as e:
+        print("Root Token Error")
     #這個可以讀取
     #print(client.read(path='secret/webapp/config', wrap_ttl=None))
 

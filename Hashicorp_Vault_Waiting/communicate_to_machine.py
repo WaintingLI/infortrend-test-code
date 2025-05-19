@@ -72,6 +72,7 @@ def all_node_to_connect_k8s(dilver_command:str='kubectl get service -n test-for-
     #從ini文件中獲取所有可以連線到Node底層的IP
     node_list = NODE_IP.replace(" ","").split(",")
     get_terminal_data =[]
+    #print("node_list=",node_list)
     for node_ip in node_list:
         #print("node_ip=",node_ip)
         try:
@@ -81,8 +82,9 @@ def all_node_to_connect_k8s(dilver_command:str='kubectl get service -n test-for-
             if get_terminal_data != ['']:
                 print("node_ip=",node_ip)
                 print("dilver_command=",dilver_command)
-                print("No Data")
                 break
+            else:
+                print("Node ip =",node_ip,"=>No Data")
         except TimeoutError:
             print(f"Node Connect {node_ip} Fail(TimeoutError)(com)")
         except SSHException:
@@ -168,7 +170,7 @@ def get_vault_root_token(app_name:str="vault",app_namespace:str="test-for-app-1"
         str| None: 找尋到的root Token,沒有找到折返回None
     """
     #kubectl get configmap -n test-for-app-test vault-n-keys-configmap -o yaml | grep root_token
-    sned_command = "kubectl get configmap -n " + str(app_namespace) + " " + str(app_name).replace(" ","") + "-keys-configmap -o yaml | grep root_token"
+    sned_command = "kubectl get configmap -n " + str(app_namespace) + " " + str(app_name).replace(" ","") + "-api-keys-configmap -o yaml | grep root_token"
     #print("sned_command=",sned_command)
     get_answer = all_node_to_connect_k8s(sned_command)
     #print("get_answer =",get_answer,type(get_answer))
