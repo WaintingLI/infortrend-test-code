@@ -190,77 +190,80 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
     driver.execute_script("window.open('');")
     get_window_handle_num = len(driver.window_handles)
     return_pvc_name=""
-    for number in range(get_window_handle_num):
-        if driver.window_handles[get_window_handle_num-number-1] != main_handle:
-            driver.switch_to.window(driver.window_handles[get_window_handle_num-number-1])
-            driver.get(RANCHER_ip)
-            select_control_ui(driver,"Advanced","Storage","PersistentVolumeClaims")
-            #在PVC點選Create
-            logging_config.debug("點選create")
-            WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a"))).click()
-            #driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a").click()
-            get_pvc_namespace_name = driver.find_elements(By.CSS_SELECTOR,"form > div.resource-container.cru__content > div.row.mb-20 > div > div")
-            #創建PVC旗標
-            pvc_done_flage = False
-            while not pvc_done_flage:
-                #選擇要在哪一個NameSpace建立
-                for namespace_item in get_pvc_namespace_name:
-                    logging_config.info(namespace_item.find_element(By.CSS_SELECTOR,"div > label").text)
-                    if namespace_item.find_element(By.CSS_SELECTOR,"div > label").text == "Namespace *":
-                        namespace_item.find_element(By.CSS_SELECTOR,"div > div > div > div > input").click()
-                        #獲取NameSpace清單
-                        pvc_namespace_list = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu > li")
-                        for pvc_namespace in pvc_namespace_list:
-                            logging_config.debug(pvc_namespace.text)
-                            if pvc_namespace.text == select_name_space:
-                                pvc_namespace.click()
-                                #避開StaleElementReferenceException
-                                break
-                        else:
-                            #點選Create a New Namespace
-                            create_a_new_namespace_button = pvc_namespace_list[0]
-                            driver.execute_script("$(arguments[0]).click()",create_a_new_namespace_button)
-                            driver.find_element(By.CSS_SELECTOR,"div.labeled > div > input[placeholder=\"Create a New Namespace\"]").send_keys(select_name_space)
-                #避開StaleElementReferenceException(創造Name Space會動到網頁)
+    try_counter = 3
+    while(return_pvc_name == "" and try_counter > 0):
+        for number in range(get_window_handle_num):
+            if driver.window_handles[get_window_handle_num-number-1] != main_handle:
+                driver.switch_to.window(driver.window_handles[get_window_handle_num-number-1])
+                driver.get(RANCHER_ip)
+                select_control_ui(driver,"Advanced","Storage","PersistentVolumeClaims")
+                #在PVC點選Create
+                logging_config.debug("點選create")
+                WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a"))).click()
+                #driver.find_element(By.CSS_SELECTOR,"div#__layout > div > div.dashboard-content.pin-bottom > main > div > header > div.actions-container > div > a").click()
                 get_pvc_namespace_name = driver.find_elements(By.CSS_SELECTOR,"form > div.resource-container.cru__content > div.row.mb-20 > div > div")
-                for namespace_item in get_pvc_namespace_name:
-                    logging_config.info(namespace_item.find_element(By.CSS_SELECTOR,"div > label").text)
-                    if namespace_item.find_element(By.CSS_SELECTOR,"label").text == "Name *":
-                        namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(Keys.CONTROL+"a")
-                        namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(Keys.DELETE)
-                        #使用亂數來創造名字
-                        string_nuber = 8
-                        print_string = ""
-                        get_str_list = random.sample('1234567890zyxwvutsrqponmlkjihgfedcba',string_nuber)
-                        for number in range(string_nuber):
-                            print_string = print_string + get_str_list[number]
-                        namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(app_pvc_name+"-"+print_string)
-                        return_pvc_name = app_pvc_name+"-"+print_string
-                #PVC Create下面的功能設定(Volume Claim, Customize, Labels & Annotations)
-                get_pvc_create_options = driver.find_elements(By.CSS_SELECTOR,"ul.tabs.vertical > li > a > span")
-                for option in get_pvc_create_options:
-                    if option.text == "Customize":
-                        option.click()
+                #創建PVC旗標
+                pvc_done_flage = False
+                while not pvc_done_flage:
+                    #選擇要在哪一個NameSpace建立
+                    for namespace_item in get_pvc_namespace_name:
+                        logging_config.info(namespace_item.find_element(By.CSS_SELECTOR,"div > label").text)
+                        if namespace_item.find_element(By.CSS_SELECTOR,"div > label").text == "Namespace *":
+                            namespace_item.find_element(By.CSS_SELECTOR,"div > div > div > div > input").click()
+                            #獲取NameSpace清單
+                            pvc_namespace_list = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu > li")
+                            for pvc_namespace in pvc_namespace_list:
+                                logging_config.debug(pvc_namespace.text)
+                                if pvc_namespace.text == select_name_space:
+                                    pvc_namespace.click()
+                                    #避開StaleElementReferenceException
+                                    break
+                            else:
+                                #點選Create a New Namespace
+                                create_a_new_namespace_button = pvc_namespace_list[0]
+                                driver.execute_script("$(arguments[0]).click()",create_a_new_namespace_button)
+                                driver.find_element(By.CSS_SELECTOR,"div.labeled > div > input[placeholder=\"Create a New Namespace\"]").send_keys(select_name_space)
+                    #避開StaleElementReferenceException(創造Name Space會動到網頁)
+                    get_pvc_namespace_name = driver.find_elements(By.CSS_SELECTOR,"form > div.resource-container.cru__content > div.row.mb-20 > div > div")
+                    for namespace_item in get_pvc_namespace_name:
+                        logging_config.info(namespace_item.find_element(By.CSS_SELECTOR,"div > label").text)
+                        if namespace_item.find_element(By.CSS_SELECTOR,"label").text == "Name *":
+                            namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(Keys.CONTROL+"a")
+                            namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(Keys.DELETE)
+                            #使用亂數來創造名字
+                            string_nuber = 8
+                            print_string = ""
+                            get_str_list = random.sample('1234567890zyxwvutsrqponmlkjihgfedcba',string_nuber)
+                            for number in range(string_nuber):
+                                print_string = print_string + get_str_list[number]
+                            namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(app_pvc_name+"-"+print_string)
+                            return_pvc_name = app_pvc_name+"-"+print_string
+                    #PVC Create下面的功能設定(Volume Claim, Customize, Labels & Annotations)
+                    get_pvc_create_options = driver.find_elements(By.CSS_SELECTOR,"ul.tabs.vertical > li > a > span")
+                    for option in get_pvc_create_options:
+                        if option.text == "Customize":
+                            option.click()
 
-                        get_option_access_modes = driver.find_elements(By.CSS_SELECTOR,"section#customize > div > div")
-                        for namespace_item in get_option_access_modes:
-                            #Single Node Read-Write、Many Nodes Read-Only 、Many Nodes Read-Write
-                            if namespace_item.text == "Single Node Read-Write":
-                                while namespace_item.find_element(By.CSS_SELECTOR,"label > span.checkbox-custom").get_attribute("aria-checked"):
-                                    namespace_item.find_element(By.CSS_SELECTOR,"label").click()
-                                    logging_config.info("強制取消 => Single Node Read-Write")
-                            if namespace_item.text == "Many Nodes Read-Write":
-                                while not namespace_item.find_element(By.CSS_SELECTOR,"label > span.checkbox-custom").get_attribute("aria-checked"):
-                                    namespace_item.find_element(By.CSS_SELECTOR,"label").click()
-                                    logging_config.info("強制設定 => Many Nodes Read-Write")
-                #按下Create按鈕
-                driver.find_element(By.CSS_SELECTOR," button.btn.role-primary > span").click()
-                try:
-                    driver.find_element(By.CSS_SELECTOR,"div#cru-errors > div > div > span")
-                    pvc_done_flage = False
-                    logging_config.info("創建PVC失敗")
-                except NoSuchElementException:
-                    pvc_done_flage = True
+                            get_option_access_modes = driver.find_elements(By.CSS_SELECTOR,"section#customize > div > div")
+                            for namespace_item in get_option_access_modes:
+                                #Single Node Read-Write、Many Nodes Read-Only 、Many Nodes Read-Write
+                                if namespace_item.text == "Single Node Read-Write":
+                                    while namespace_item.find_element(By.CSS_SELECTOR,"label > span.checkbox-custom").get_attribute("aria-checked"):
+                                        namespace_item.find_element(By.CSS_SELECTOR,"label").click()
+                                        logging_config.info("強制取消 => Single Node Read-Write")
+                                if namespace_item.text == "Many Nodes Read-Write":
+                                    while not namespace_item.find_element(By.CSS_SELECTOR,"label > span.checkbox-custom").get_attribute("aria-checked"):
+                                        namespace_item.find_element(By.CSS_SELECTOR,"label").click()
+                                        logging_config.info("強制設定 => Many Nodes Read-Write")
+                    #按下Create按鈕
+                    driver.find_element(By.CSS_SELECTOR," button.btn.role-primary > span").click()
+                    try:
+                        driver.find_element(By.CSS_SELECTOR,"div#cru-errors > div > div > span")
+                        pvc_done_flage = False
+                        logging_config.info("創建PVC失敗")
+                    except NoSuchElementException:
+                        pvc_done_flage = True
+        try_counter = try_counter - 1
     driver.close()
     driver.switch_to.window(main_handle)
     return return_pvc_name
@@ -592,6 +595,18 @@ if __name__ == "__main__":
             DO_WHILE_FLAG = True
             sleep(3)
 
+    #預先創建PVC,解決在安裝App時,創建PVC無法讀取到的問題
+    PVC_QUEUE = {}
+    while test_dict.get("Storage",False):
+        for json_option in list(test_dict['Storage'].keys()):
+            #兩種狀況,Storage Class或者要創建PVC
+            if not str(json_option).startswith("StorageClass"):
+                if test_dict['Storage'].get(str(json_option),False):
+                    meta_get_pvc_name = test_dict['Storage'][str(json_option)]
+                    GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name)
+                    PVC_QUEUE[meta_get_pvc_name] = GET_PVC_NAME
+                    logging_config.info(f"PVC[{meta_get_pvc_name}]={GET_PVC_NAME}")
+        break
     #點選UI控制Tab
     select_control_ui(driver,"Apps","Marketplace")
     #select_control_ui(driver,"Apps","Installed Apps")
@@ -727,7 +742,10 @@ if __name__ == "__main__":
                             if test_dict['Storage'].get(str(json_option),False):
                                 meta_get_pvc_name = test_dict['Storage'][str(json_option)]
                                 logging_config.info(f"json pvc 設定名稱{meta_get_pvc_name}")
-                                GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name)
+                                if PVC_QUEUE.get(meta_get_pvc_name,False):
+                                    GET_PVC_NAME = PVC_QUEUE[meta_get_pvc_name]
+                                else:
+                                    GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name)
                             else:
                                 GET_PVC_NAME = create_pvc(select_name_space=args_2.name_space)
                             logging_config.info(f"收到的PVC名稱{GET_PVC_NAME}")
@@ -894,6 +912,7 @@ if __name__ == "__main__":
     #確認App是否安裝了,在嘗試確認100次後,都沒有就不會自動關閉瀏覽器
     for i in range(100):
         logging_config.info(f"確認App是否安裝,檢查次數{i+1}")
+        logging_config.info(f"{csv_data_dict['App Name']},{args_2.name_space}")
         if communicate_to_machine.check_app_pending(csv_data_dict['App Name'],args_2.name_space):
             break
         sleep(1)
