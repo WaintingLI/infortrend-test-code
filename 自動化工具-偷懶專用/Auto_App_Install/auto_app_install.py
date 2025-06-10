@@ -365,11 +365,18 @@ def select_control_ui(uidriver:WebDriver,
     #依照不同的數值來辨別UI,0為傳統UI,1為依照使用者權限分類的UI
     ui_type = 0
     ##檢測是否為哪一種UI
-    try:
-        WebDriverWait(uidriver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User")))
-        ui_type = 1
-    except TimeoutException:
-        ui_type = 0
+    while True:
+        logging_config.info("Checking UI Type")
+        try:
+            WebDriverWait(uidriver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"li#User")))
+            ui_type = 1
+        except TimeoutException:
+            try:
+                uidriver.find_element(By.CSS_SELECTOR,"nav.side-nav > div > div > div > a > h6")
+            except NoSuchElementException:
+                continue
+            ui_type = 0
+        break
     #print("ui_type => ",ui_type)
     def click_loop(uiwebdriver:WebDriver,list_of_webelement:list,goal_click:str) -> None:
         if goal_click == "None":
@@ -415,6 +422,7 @@ def select_control_ui(uidriver:WebDriver,
         sleep(10)
         click_loop(uidriver,get_list,select_item_2)
         get_list = uidriver.find_elements(By.CSS_SELECTOR,"section[role=\"tabpanel\"] > div > ul > li > div > ul > li")
+
         click_loop(uidriver,get_list,select_item_3)
         break
     
@@ -579,6 +587,7 @@ if __name__ == "__main__":
 
         #將Project id 固定為"Only User Namespaces"
         try:
+            WebDriverWait(driver,300).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.ns-filter > div > div")))
             get_project_id_name = driver.find_element(By.CSS_SELECTOR,"div.ns-filter > div > div")
             logging_config.debug(f"get_project_id_name.text ={get_project_id_name.text}")
             if get_project_id_name.text != "Only User Namespaces":
@@ -591,6 +600,12 @@ if __name__ == "__main__":
                         driver.find_element(By.CSS_SELECTOR,"div.ns-filter > div > div").click()
                         break
         except NoSuchElementException:
+            logging_config.info("NoSuchElementException-Try to login local user")
+            driver.refresh()
+            DO_WHILE_FLAG = True
+            sleep(3)
+        except TimeoutException:
+            logging_config.info("TimeoutException-Try to login local user")
             driver.refresh()
             DO_WHILE_FLAG = True
             sleep(3)
