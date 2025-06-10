@@ -710,6 +710,7 @@ if __name__ == "__main__":
         break
 
     while test_dict.get("Storage",False):
+        set_pvc_flag = True
         driver.find_element(By.CSS_SELECTOR,"li#Storage > a").click()
         logging_config.info("在Storage")
         get_options = driver.find_elements(By.CSS_SELECTOR,"section#Storage >  div > div > div > div > div > div ")
@@ -775,11 +776,15 @@ if __name__ == "__main__":
                         get_pvc_list = driver.find_elements(By.CSS_SELECTOR,"ul.vs__dropdown-menu > li.vs__dropdown-option")
                         for pvc_item in get_pvc_list:
                             logging_config.debug(f"pvc_item={pvc_item.text}")
-                            if pvc_item.text == GET_PVC_NAME:
+                            if pvc_item.text == GET_PVC_NAME and set_pvc_flag:
                                 pvc_item.click()
                                 break
+                        else:
+                            set_pvc_flag = False
+                            logging_config.info(f"PVC Not Found={GET_PVC_NAME}")
                         logging_config.debug(f"{json_option}--END")
-        break
+        if set_pvc_flag:
+            break
 
     while test_dict.get("Service",False):
         driver.find_element(By.CSS_SELECTOR,"li#Service > a").click()
