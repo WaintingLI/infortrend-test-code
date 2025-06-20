@@ -1,7 +1,11 @@
 {
     "General":{},
     "Storage":{
-		"PVC for Artifact Server(MinIO) *":"mlflow-minio-pvc"
+		"PVC for Artifact Server(MinIO) *":"mlflow-minio-pvc",
+		"Use Default Storage Class":{
+			"StorageClass for PostgreSQL Data":"",
+			"StorageClass for PostgreSQL Config":""
+		}
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",

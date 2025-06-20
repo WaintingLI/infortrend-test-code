@@ -3,7 +3,10 @@
 		"GPU":"1"
 	},
     "Storage":{
-		"PVC for Ollama *":"ollama-pvc"
+		"PVC for Ollama *":"ollama-pvc",
+		"Use Default Storage Class":{
+			"StorageClass for ollama Web UI":""
+		}
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",

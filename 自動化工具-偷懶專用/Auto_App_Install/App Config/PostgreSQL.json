@@ -1,6 +1,11 @@
 {
     "General":{},
-    "Storage":{},
+    "Storage":{
+		"Use Default Storage Class":{
+			"StorageClass for Database - Data":"",
+			"StorageClass for Database - Config":""
+		}
+	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
 		"Static Virtual IP *":"172.24.128.172"

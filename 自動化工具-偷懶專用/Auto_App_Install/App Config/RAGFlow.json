@@ -1,7 +1,12 @@
 {
     "General":{},
     "Storage":{
-		"PVC for MinIO *":"ragflow-pvc"
+		"PVC for MinIO *":"ragflow-pvc",
+		"Use Default Storage Class":{
+			"StorageClass for Elasticsearch":"",
+			"StorageClass for MySQL":"",
+			"StorageClass for Redis":""
+		}
 	},
     "Service":{
         "App Service Type *":"LoadBalancer",

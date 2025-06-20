@@ -3,7 +3,10 @@
 		"App replicas *":"1"
 	},
     "Storage":{
-		"PVC for LocalAI Models *":"localai-model-pvc"
+		"PVC for LocalAI Models *":"localai-model-pvc",
+		"Use Default Storage Class":{
+			"StorageClass for Database":""
+		}
 	},
     "Service":{
         "App Service Type *":"LoadBalancer",

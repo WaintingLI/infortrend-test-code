@@ -3,7 +3,9 @@
     "Storage":{
 		"Select an existing PVC for nextcloud *":"nextcloud-pvc",
 		"Select an existing PVC for nextcloud data *":"nextcloud-data-pvc",
-		"StorageClass for mariadb *":""
+		"Use Default Storage Class":{
+			"StorageClass for Mariadb *":""
+		}
 	},
     "Service":{
 		"Ingress":{

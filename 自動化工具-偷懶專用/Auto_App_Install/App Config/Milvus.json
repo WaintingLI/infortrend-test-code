@@ -1,6 +1,14 @@
 {
     "General":{},
-    "Storage":{},
+    "Storage":{
+		"Use Default Storage Class":{
+			"StorageClass for Milvus etcd":"",
+			"StorageClass for Milvus Object Storage":"",
+			"StorageClass for Pulsar Zookeeper":"",
+			"StorageClass for Pulsar Bookkeeper Journal":"",
+			"StorageClass for Pulsar Bookkeeper Ledgers":""
+		}
+	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
 		"Static Virtual IP *":"172.24.128.165"

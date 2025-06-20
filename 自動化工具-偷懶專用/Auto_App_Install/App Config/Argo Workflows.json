@@ -1,6 +1,10 @@
 {
     "General":{},
     "Storage":{
+		"Use Default Storage Class":{
+			"StorageClass for PostgreSQL Date":"",
+			"StorageClass for PostgreSQL Config":""
+		},
 		"PVC for MinIO *":"argowork-minio-pvc"
 	},
     "Service":{

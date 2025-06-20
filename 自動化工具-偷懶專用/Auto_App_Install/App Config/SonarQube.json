@@ -1,7 +1,11 @@
 {
     "General":{},
     "Storage":{
-		"PVC for SonarQube *":"sonarqube-pvc"
+		"PVC for SonarQube *":"sonarqube-pvc",
+		"Use Default Storage Class":{
+			"StorageClass for PostgreSQL Data":"",
+			"StorageClass for PostgreSQL Config":""
+		}
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",

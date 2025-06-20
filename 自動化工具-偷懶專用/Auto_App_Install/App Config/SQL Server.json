@@ -2,7 +2,11 @@
     "General":{
 		"CPU Upper Limit":"10000m"
 	},
-    "Storage":{},
+    "Storage":{
+		"Use Default Storage Class":{
+			"StorageClass for Database":""
+		}
+	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
 		"Static Virtual IP *":"172.24.128.171"

@@ -1,13 +1,15 @@
 {
     "General":{},
     "Storage":{
+		"PVC for Focalboard *":"focalboard-pvc",
 		"Use Default Storage Class":{
-			"StorageClass for Database":""
+			"StorageClass for PostgreSQL Data":"",
+			"StorageClass for PostgreSQL Config":""
 		}
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
-		"Static Virtual IP *":"172.24.128.176"
+		"Static Virtual IP *":"172.24.128.173"
     },
     "APP setting":{}
 }

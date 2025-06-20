@@ -1,0 +1,9 @@
+{
+    "General":{},
+    "Storage":{},
+    "Service":{
+        "App Image Service Type *":"LoadBalancer",
+		"Static Virtual IP *":"172.24.128.177"
+    },
+    "APP setting":{}
+}

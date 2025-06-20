@@ -1,7 +1,12 @@
 {
     "General":{},
     "Storage":{
-		"PVC for the SharedHome of Jira Software *":"jira-pvc"
+		"PVC for the SharedHome of Jira Software *":"jira-pvc",
+		"Use Default Storage Class":{
+			"StorageClass for the LocalHome of Jira Software":"",
+			"StorageClass for PostgreSQL Data":"",
+			"StorageClass for PostgreSQL Config":""
+		}
 	},
     "Service":{
         "Ingress":{
