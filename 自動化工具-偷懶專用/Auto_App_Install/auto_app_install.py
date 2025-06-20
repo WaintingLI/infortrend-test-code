@@ -172,12 +172,13 @@ def install_from_chart_to_app_deploy(app_name:str="Airbyte",service_type:str="ba
         return None
     return write_app_name
 
-def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test") -> str:
+def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test",pvc_storageclass:str="Default") -> str:
     """
-    再所需的NS中創建PVC,並且反傳創建PVC的名字
+    再所需的NS中創建PVC,並且回傳創建PVC的名字
     Args:
         select_name_space (str, optional): 選擇要創建PVC的所在Node. Defaults to "test-for-balancer".
         app_pvc_name (str, optional): 創建pvc的名稱. Defaults to "test".
+        pvc_storageclass(str, optional): 設定pvc的Storage Class. Defaults to "Default(預設值)".
 
     Returns:
         str: 最終創建pvc的名稱
@@ -238,6 +239,19 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
                                 print_string = print_string + get_str_list[number]
                             namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(app_pvc_name+"-"+print_string)
                             return_pvc_name = app_pvc_name+"-"+print_string
+                    #Waiting_test
+                    if pvc_storageclass != "Default":
+                        #section#volumeclaim > div > div > div > div > div > div.labeled-select
+                        driver.find_element(By.CSS_SELECTOR,"section#volumeclaim > div > div > div > div > div > div.labeled-select").click()
+                        #ul[role="listbox"] > li
+                        get_storageclass_list = driver.find_elements(By.CSS_SELECTOR,"ul[role=\"listbox\"] > li")
+                        while not get_storageclass_list:
+                            get_storageclass_list = driver.find_elements(By.CSS_SELECTOR,"ul[role=\"listbox\"] > li")
+                        for item in get_storageclass_list:
+                            if pvc_storageclass == item.text:
+                                item.click()
+                                break
+                    #Waiting_test
                     #PVC Create下面的功能設定(Volume Claim, Customize, Labels & Annotations)
                     get_pvc_create_options = driver.find_elements(By.CSS_SELECTOR,"ul.tabs.vertical > li > a > span")
                     for option in get_pvc_create_options:
@@ -309,6 +323,13 @@ def create_args() -> dict:
         default="balancer",
         metavar="xxxxx",
         help="輸入App名稱後面的修飾詞(都是英文小寫) (default: balancer)"
+    )
+    parser.add_argument(
+        "--StorageClass",
+        type=str,
+        default="Default",
+        metavar="xxxxx",
+        help="輸入想要的Storage Class,不輸入則使用系統預設值 (default: Default)"
     )
     parser.add_argument(
         "--OTHER_USR",
@@ -512,6 +533,56 @@ if __name__ == "__main__":
         if test_dict["Service"]["MinIO Web Service Type *"] != "LoadBalancer":
             test_dict["Service"].pop("Static Virtual IP for MinIO *",None)
 
+    #是否要指定Storage Class,並且檢查Storage設定是否有誤
+    if args_2.StorageClass != "Default":
+        #整理StorageClass參數,必定為local,local-delay-bind,local-replica2,local-replica2-delay-bind,local-replica3,local-replica3-delay-bind
+        args_2.StorageClass = args_2.StorageClass.replace(" ","")
+        #檢查是否為cluster中的storageclass名稱
+        get_storage_class_list = []
+        while not get_storage_class_list:
+            get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass | awk '{print$1}' | grep -v NAME")
+        for storageclass_name in get_storage_class_list:
+            if args_2.StorageClass == storageclass_name:
+                print("storageclass_name=",storageclass_name)
+                break
+        else:
+            logging_config.info(f"StorageClass 設定值為{ args_2.StorageClass} 無法辨識")
+            logging_config.info("StorageClass Will set \" default storageclass \"")
+            args_2.StorageClass = "Default"
+        #檢查是否為預設值StorageClass
+        if args_2.StorageClass != "Default":
+            get_default_storageclass = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass | awk '{print$1}' | grep -v NAME")
+            logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass}")
+            if args_2.StorageClass == get_default_storageclass[0]:
+                logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass[0]}, StorageClass 更改為\"Default\"")
+                args_2.StorageClass = "Default"
+
+        try:
+            if args_2.app_name != "Jenkins" and args_2.StorageClass != "Default":
+                test_dict["Storage"].update(test_dict["Storage"].pop("Use Default Storage Class"))
+            else:
+                #如果不需要指定StorageClass則移除該參數
+                try:
+                    test_dict["Storage"].pop("Use Default Storage Class")
+                except KeyError:
+                    pass
+        except KeyError:
+            logging_config.info("json File can't found \"Use Default Storage Class\" Setting")
+            logging_config.info("End install")
+            driver.close()
+            sys.exit(0)
+        while test_dict.get("Storage",True):
+            logging_config.debug(test_dict)
+            if test_dict.get("Storage",False):
+                break
+    else:
+        #如果不需要指定StorageClass則移除該參數
+        try:
+            test_dict["Storage"].pop("Use Default Storage Class")
+        except KeyError:
+            pass
+
+
     #獲取csv資料
     csv_data_dict['App Name'] = args_2.app_name
     csv_data_dict['Name Space'] = args_2.name_space
@@ -558,6 +629,12 @@ if __name__ == "__main__":
                 pass
             except StaleElementReferenceException:
                 break
+            except ElementClickInterceptedException:
+                try:
+                    #查看是否有登入後的Dashboard頁面,來作為是否已經登入的判斷基準
+                    WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"section.dashboard.outlet")))
+                except TimeoutException:
+                    continue
         #LDAP登入流程結束
         break
     ##OpenLDAP登入-end
@@ -618,7 +695,7 @@ if __name__ == "__main__":
             if not str(json_option).startswith("StorageClass"):
                 if test_dict['Storage'].get(str(json_option),False):
                     meta_get_pvc_name = test_dict['Storage'][str(json_option)]
-                    GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name)
+                    GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name,args_2.StorageClass)
                     PVC_QUEUE[meta_get_pvc_name] = GET_PVC_NAME
                     logging_config.info(f"PVC[{meta_get_pvc_name}]={GET_PVC_NAME}")
         break
@@ -713,6 +790,17 @@ if __name__ == "__main__":
         set_pvc_flag = True
         driver.find_element(By.CSS_SELECTOR,"li#Storage > a").click()
         logging_config.info("在Storage")
+        #Waiting_test
+        if args_2.StorageClass != "Default" and args_2.app_name != "Jenkins":
+            default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
+            default_storage_class_button.click()
+            ##Check cancel check box
+            default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
+            #aria-checked
+            while default_storage_class_button.get_attribute("aria-checked"):
+                default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
+                print("點完後=>",default_storage_class_button.get_attribute("aria-checked"))
+        #Waiting_test
         get_options = driver.find_elements(By.CSS_SELECTOR,"section#Storage >  div > div > div > div > div > div ")
         for i, item in enumerate(get_options):
             try:
@@ -742,18 +830,22 @@ if __name__ == "__main__":
                         #有兩種選單,一種是要指定Storage Class,另一種要指定PVC
                         if str(json_option).startswith("StorageClass"):
                             #GET_PVC_NAME = "local-replica2-delay-bind"
-                            get_storage_class_list = []
-                            while not get_storage_class_list:
-                                get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass")
-                            for item in get_storage_class_list:   
-                                if str(item).find("(default)") > 0:
-                                    GET_PVC_NAME = item[0:str(item).find("(default)")].replace(" ","")
-                                    logging_config.info(f"從底層獲得預設Storage Class{GET_PVC_NAME}")
-                            #如果有找到Storage Class相關設定,就採用設定值,如果沒有就使用預設值
-                            if test_dict["Storage"].get("StorageClass for Database *",False):
-                                if str(test_dict["Storage"]["StorageClass for Database *"]) != "":
-                                    GET_PVC_NAME = str(test_dict["Storage"]["StorageClass for Database *"])
-                                logging_config.info(f"在json中找到Storage Class設定值 = {GET_PVC_NAME}")
+                            if args_2.StorageClass != "Default":
+                                GET_PVC_NAME = args_2.StorageClass
+                                logging_config.info(f"即將設定Storage Class = {GET_PVC_NAME}")
+                            else:
+                                get_storage_class_list = []
+                                while not get_storage_class_list:
+                                    get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass")
+                                for item in get_storage_class_list:   
+                                    if str(item).find("(default)") > 0:
+                                        GET_PVC_NAME = item[0:str(item).find("(default)")].replace(" ","")
+                                        logging_config.info(f"從底層獲得預設Storage Class = {GET_PVC_NAME}")
+                                #如果有找到Storage Class相關設定,就採用設定值,如果沒有就使用預設值
+                                if test_dict["Storage"].get("StorageClass for Database *",False):
+                                    if str(test_dict["Storage"]["StorageClass for Database *"]) != "":
+                                        GET_PVC_NAME = str(test_dict["Storage"]["StorageClass for Database *"])
+                                    logging_config.info(f"在json中找到Storage Class設定值 = {GET_PVC_NAME}")
                         else:
                             if test_dict['Storage'].get(str(json_option),False):
                                 meta_get_pvc_name = test_dict['Storage'][str(json_option)]
@@ -761,9 +853,9 @@ if __name__ == "__main__":
                                 if PVC_QUEUE.get(meta_get_pvc_name,False):
                                     GET_PVC_NAME = PVC_QUEUE[meta_get_pvc_name]
                                 else:
-                                    GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name)
+                                    GET_PVC_NAME = create_pvc(args_2.name_space,meta_get_pvc_name,args_2.StorageClass)
                             else:
-                                GET_PVC_NAME = create_pvc(select_name_space=args_2.name_space)
+                                GET_PVC_NAME = create_pvc(select_name_space=args_2.name_space,pvc_storageclass=args_2.StorageClass)
                             logging_config.info(f"收到的PVC名稱{GET_PVC_NAME}")
                             logging_config.debug(f"i={i}")
                         try:
