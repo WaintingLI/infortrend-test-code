@@ -543,7 +543,6 @@ if __name__ == "__main__":
             get_storage_class_list = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass | awk '{print$1}' | grep -v NAME")
         for storageclass_name in get_storage_class_list:
             if args_2.StorageClass == storageclass_name:
-                print("storageclass_name=",storageclass_name)
                 break
         else:
             logging_config.info(f"StorageClass 設定值為{ args_2.StorageClass} 無法辨識")
@@ -552,13 +551,12 @@ if __name__ == "__main__":
         #檢查是否為預設值StorageClass
         if args_2.StorageClass != "Default":
             get_default_storageclass = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass | awk '{print$1}' | grep -v NAME")
-            logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass}")
             if args_2.StorageClass == get_default_storageclass[0]:
                 logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass[0]}, StorageClass 更改為\"Default\"")
                 args_2.StorageClass = "Default"
 
         try:
-            if args_2.app_name != "Jenkins" and args_2.StorageClass != "Default":
+            if args_2.app_name != "Jenkins" and args_2.app_name != "MinIO" and args_2.StorageClass != "Default":
                 test_dict["Storage"].update(test_dict["Storage"].pop("Use Default Storage Class"))
             else:
                 #如果不需要指定StorageClass則移除該參數
