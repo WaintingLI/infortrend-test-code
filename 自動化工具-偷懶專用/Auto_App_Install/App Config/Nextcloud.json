@@ -4,7 +4,9 @@
 		"Select an existing PVC for nextcloud *":"nextcloud-pvc",
 		"Select an existing PVC for nextcloud data *":"nextcloud-data-pvc",
 		"Use Default Storage Class":{
-			"StorageClass for Mariadb *":""
+			"StorageClass for Mariadb *":"",
+			"StorageClass for Redis Master *":"",
+			"StorageClass for Redis Replica *":""
 		}
 	},
     "Service":{
