@@ -550,7 +550,7 @@ if __name__ == "__main__":
             args_2.StorageClass = "Default"
         #檢查是否為預設值StorageClass
         if args_2.StorageClass != "Default":
-            get_default_storageclass = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass | awk '{print$1}' | grep -v NAME")
+            get_default_storageclass = communicate_to_machine.all_node_to_connect_k8s("kubectl get storageclass | grep \(default\)  | awk '{print$1}' | grep -v NAME")
             if args_2.StorageClass == get_default_storageclass[0]:
                 logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass[0]}, StorageClass 更改為\"Default\"")
                 args_2.StorageClass = "Default"
@@ -791,7 +791,11 @@ if __name__ == "__main__":
         #Waiting_test
         if args_2.StorageClass != "Default" and args_2.app_name != "Jenkins":
             default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
-            default_storage_class_button.click()
+            try:
+                default_storage_class_button.click()
+            except ElementClickInterceptedException:
+                driver.execute_script("arguments[0].scrollIntoView();", default_storage_class_button)
+                driver.execute_script("arguments[0].click();",default_storage_class_button)
             ##Check cancel check box
             default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
             #aria-checked
