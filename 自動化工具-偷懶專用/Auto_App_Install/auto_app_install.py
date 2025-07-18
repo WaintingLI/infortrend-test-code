@@ -639,6 +639,10 @@ if __name__ == "__main__":
     #DO_WHILE_FLAG = True
     while DO_WHILE_FLAG:
         DO_WHILE_FLAG = False
+        #檢查當前網頁是否為正確網頁
+        if driver.current_url.find(RANCHER_ip) < 0:
+            logging_config.info(f"will go to {RANCHER_ip}")
+            driver.get(RANCHER_ip)
         try:
             WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
         except TimeoutException:
@@ -674,6 +678,7 @@ if __name__ == "__main__":
                         project_id_item.click()
                         driver.find_element(By.CSS_SELECTOR,"div.ns-filter > div > div").click()
                         break
+            DO_WHILE_FLAG = False
         except NoSuchElementException:
             logging_config.info("NoSuchElementException-Try to login local user")
             driver.refresh()
