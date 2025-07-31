@@ -51,3 +51,5 @@ def check_element(driver,element,sec):
         driver.close()
         driver.quit()
         sys.exit(1)
+#會移動到指定的位置(跟滑鼠移動方式一樣)
+driver.find_element(By.CSS_SELECTOR,element).location_once_scrolled_into_view
