@@ -1,0 +1,11 @@
+{
+    "General":{},
+    "Storage":{},
+    "Service":{
+		"Ingress":{
+			"Spark Web URL *":"spark-test"
+		}
+        
+    },
+    "APP setting":{}
+}

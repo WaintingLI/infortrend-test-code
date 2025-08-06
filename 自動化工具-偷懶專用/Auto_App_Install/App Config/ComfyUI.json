@@ -1,0 +1,12 @@
+{
+    "General":{},
+    "Storage":{
+		"PVC for Storing ComfyUI Models *":"comfyui-store-pvc",
+        "PVC for Temporary ComfyUI Data *":"comfyui-tmp-pvc"
+	},
+    "Service":{
+        "App Image Service Type *":"LoadBalancer",
+		"Static Virtual IP *":"172.24.128.173"
+    },
+    "APP setting":{}
+}
