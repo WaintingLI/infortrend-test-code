@@ -6,6 +6,7 @@ import sys
 import os
 import configparser
 import shutil
+from argparse import ArgumentParser
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
@@ -29,6 +30,30 @@ from selenium.webdriver.support.ui import Select
 #檢查當前工作路徑是否在Python檔案的所在地,如果是就不會切換目錄
 if os.path.dirname(sys.argv[0]):
     os.chdir(os.path.dirname(sys.argv[0]))
+
+#引用外部指令
+def create_args():
+    parser = ArgumentParser(description="Eonone download logs")
+    parser.add_argument(
+        "--ip",
+        type=str,
+        default="default",
+        metavar="N",
+        help="input ipv4",
+    )
+    parser.add_argument(
+        "--port",
+        type=str,
+        default="8816",
+        metavar="N",
+        help="input ip port",\
+    )
+    args_meta = parser.parse_args()
+    print("Arguments:")
+    for arg in vars(args_meta):
+        print(f"  {arg}: {getattr(args_meta, arg)}")
+    return args_meta
+
 #獲取當前所在目錄
 TMP_STORE_PATH = "test_download"
 DOWNLOAD_DIR = os.getcwd() + "\\" + TMP_STORE_PATH
@@ -85,7 +110,12 @@ driver.implicitly_wait(10)
 
 
 if __name__ == "__main__":
+    #獲取輸入參數
+    args = create_args()
+    if args.ip != "default":
+        EONONE_IP = "http://"+ args.ip + ":" + args.port
     #登入
+    print("EONONE_IP=",EONONE_IP)
     driver.get(EONONE_IP)
     #WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input[name=\"j_password\"]")))
     while True:
@@ -154,6 +184,7 @@ if __name__ == "__main__":
                 if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "DiagnosticLog"):
                     os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "DiagnosticLog")
                     OUT_DIR = "DiagnosticLog"
+                continue #WAITING_TEST
             elif i == 1:
                 if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "NodeCoreDump"):
                     os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "NodeCoreDump")
@@ -222,7 +253,10 @@ if __name__ == "__main__":
 
         #關閉診斷資訊
         ELEMENT_ITEM = "div#csNodeDiagnostic > ift-dialog-footer-default > footer > ift-primary-solid-button > div > button"
-        driver.find_element(By.CSS_SELECTOR,ELEMENT_ITEM).click()
+        try:
+            driver.find_element(By.CSS_SELECTOR,ELEMENT_ITEM).click()
+        except NoSuchElementException:
+            print("Not Found Diagnostic UI, Will execute the next step")
         sleep(10)
     COUNT_DOWN = 10
     for i in range(COUNT_DOWN):
