@@ -34,7 +34,7 @@ def connect_kubectl_ip(connect_ip:str='172.24.128.111',set_command:str='kubectl 
         list: 回傳獲得的命令
     """
     SSH_USERNAME = "root"
-    SSH_PASSWORD = "ABcd_1234"
+    SSH_PASSWORD = "admin"
     date = datetime.datetime.now().strftime("%Y-%m-%d")
 
     ssh = paramiko.SSHClient()
@@ -56,6 +56,13 @@ def connect_kubectl_ip(connect_ip:str='172.24.128.111',set_command:str='kubectl 
     #print("===================================")
     #print("stdout= \n",str(stdout.read(), encoding='utf-8'))
     get_data = str(stdout.read(), encoding='utf-8')
+    get_err_data = str(stderr.read(), encoding='utf-8')
+    get_err_datas = get_err_data.split('\n')
+    if  get_err_datas != ['']:
+        logging_config.info(f"Error Message {get_err_data}")
+        raise SSHException(f"Error Message {get_err_data}")
+        
+    
     #print(get_data)
     get_datas = get_data.split('\n')
 
@@ -80,7 +87,6 @@ def all_node_to_connect_k8s(dilver_command:str='kubectl get service -n test-for-
         try:
             logging_config.debug(f" connect node_ip ={node_ip}")
             get_terminal_data = connect_kubectl_ip(node_ip,dilver_command)
-            #print("get_cluster_used_ip =",get_cluster_used_ip)
             break
         except TimeoutError:
             logging_config.info(f"Node Connect {node_ip} Fail(TimeoutError)(com)")
@@ -148,7 +154,8 @@ def check_app_pending(app_name:str="sqlserver",app_namespace:str="test-for-app-1
         return True
 
 if __name__ == "__main__":
-    print(check_app_pending("localai-test","test-for-app-7"))
+    print(check_app_pending("elasticsearch-c-re3","test-for-replica3-03"))
+    #helm list --pending -n test-for-replica3-03
     sys.exit(0)
     command = "kubectl get storageclass"
     command = " helm list  -n test-for-app-1 | grep " + "ollama-basd"
