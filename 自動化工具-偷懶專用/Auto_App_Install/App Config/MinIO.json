@@ -1,7 +1,9 @@
 {
     "General":{},
     "Storage":{
-		"PVC for MINIO *":"minio-pvc"
+        "Use Default Storage Class":{
+            "StorageClass for Minio Data":""
+		}
 	},
     "Service":{
         "MinIO Web Service Type *":"LoadBalancer",

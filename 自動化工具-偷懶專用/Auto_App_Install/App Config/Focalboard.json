@@ -3,6 +3,7 @@
     "Storage":{
 		"PVC for Focalboard *":"focalboard-pvc",
 		"Use Default Storage Class":{
+            "StorageClass for Focalboard":"",
 			"StorageClass for PostgreSQL Data":"",
 			"StorageClass for PostgreSQL Config":""
 		}
