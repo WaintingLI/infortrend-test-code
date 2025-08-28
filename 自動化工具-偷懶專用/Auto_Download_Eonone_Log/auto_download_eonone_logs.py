@@ -184,7 +184,6 @@ if __name__ == "__main__":
                 if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "DiagnosticLog"):
                     os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "DiagnosticLog")
                     OUT_DIR = "DiagnosticLog"
-                continue #WAITING_TEST
             elif i == 1:
                 if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "NodeCoreDump"):
                     os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "NodeCoreDump")
@@ -211,6 +210,8 @@ if __name__ == "__main__":
                     except NoSuchElementException:
                         pass
                     sleep(5)
+                except ElementClickInterceptedException:
+                    print("Something on the button will trig ElementClickInterceptedException")
             file_list = os.listdir("./" + TMP_STORE_PATH)
             #檢查沒有.crdownload的暫存檔案,沒有才可以進行下一步
             while True:
