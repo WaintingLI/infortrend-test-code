@@ -1,8 +1,10 @@
 {
     "General":{},
     "Storage":{
-		"PVC for Storing ComfyUI Models *":"comfyui-store-pvc",
-        "PVC for Temporary ComfyUI Data *":"comfyui-tmp-pvc"
+        "Use Default Storage Class":{
+            "StorageClass for ComfyUI Model":"",
+			"StorageClass for Temporary ComfyUI Data":""
+		}
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",

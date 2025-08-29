@@ -5,7 +5,7 @@
     "Storage":{
 		"Use Default Storage Class":{
             "StorageClass for Ollama":"",
-			"StorageClass for ollama Web UI":""
+			"StorageClass for Ollama Web UI":""
 		}
 	},
     "Service":{
