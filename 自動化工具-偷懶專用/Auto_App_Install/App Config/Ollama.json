@@ -3,8 +3,8 @@
 		"GPU":"1"
 	},
     "Storage":{
-		"PVC for Ollama *":"ollama-pvc",
 		"Use Default Storage Class":{
+            "StorageClass for Ollama":"",
 			"StorageClass for ollama Web UI":""
 		}
 	},
