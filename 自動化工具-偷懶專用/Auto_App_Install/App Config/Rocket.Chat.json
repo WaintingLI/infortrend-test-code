@@ -1,9 +1,9 @@
 {
     "General":{},
     "Storage":{
-		"PVC for Rocket.Chat *":"rocketchat-pvc",
 		"Use Default Storage Class":{
-			"StorageClass for MongoDB":""
+			"StorageClass for Rocket.Chat *":"",
+            "StorageClass for MongoDB *":""
 		}
 	},
     "Service":{

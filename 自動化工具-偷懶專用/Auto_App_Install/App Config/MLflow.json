@@ -1,8 +1,8 @@
 {
     "General":{},
     "Storage":{
-		"PVC for Artifact Server(MinIO) *":"mlflow-minio-pvc",
 		"Use Default Storage Class":{
+            "StorageClass for MinIO Storage":"",
 			"StorageClass for PostgreSQL Data":"",
 			"StorageClass for PostgreSQL Config":""
 		}
