@@ -2,7 +2,8 @@
     "General":{},
     "Storage":{
 		"Use Default Storage Class":{
-			"StorageClass for Database":""
+            "StorageClass for ClickHouse":"",
+			"StorageClass for Zookeeper":""
 		}
 	},
     "Service":{

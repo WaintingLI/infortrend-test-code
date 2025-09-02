@@ -1,10 +1,11 @@
 {
     "General":{},
     "Storage":{
-		"PVC for MinIO *":"ragflow-pvc",
 		"Use Default Storage Class":{
+            "StorageClass for Ragflow Log":"",
+			"StorageClass for MinIO":"",
 			"StorageClass for Elasticsearch":"",
-			"StorageClass for MySQL":"",
+            "StorageClass for MySQL":"",
 			"StorageClass for Redis":""
 		}
 	},
