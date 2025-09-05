@@ -5,6 +5,7 @@ from time import sleep
 import sys
 import os
 import configparser
+from argparse import ArgumentParser
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
@@ -48,10 +49,7 @@ options.binary_location=BINARY_LOCATION
 service = Service(executable_path="C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chromedriver-win64/chromedriver.exe")
 
 
-#啟動chrome
-driver = webdriver.Chrome(service=service, options=options)
-#隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
-driver.implicitly_wait(10)
+
 
 
 
@@ -64,7 +62,21 @@ REASON_FOR_OVERTIME = cf.get("APP_Info","Reason_for_overtime")
 
 #獲取使用者資料
 
-
+def create_args():
+    '''將CommandLine的參數帶入,如果設定參數則自動設定預設值'''
+    parser = ArgumentParser(description="Clickhouse Example")
+    parser.add_argument(
+        "--reason",
+        type=str,
+        default=REASON_FOR_OVERTIME,
+        metavar="AI(Project)(Reason)",
+        help=f"Reason for overtime,Default:{REASON_FOR_OVERTIME}",
+    )
+    parser_arguments = parser.parse_args()
+    print("Arguments:")
+    for arg in vars(parser_arguments):
+        print(f"  {arg}: {getattr(parser_arguments, arg)}")
+    return parser_arguments
 
 
 def check_element(driver_2:WebDriver,element:WebElement,sec:int):
@@ -87,6 +99,12 @@ def check_element(driver_2:WebDriver,element:WebElement,sec:int):
 
 
 if __name__ == "__main__":
+    #讀取輸入參數
+    args = create_args()
+    #啟動chrome
+    driver = webdriver.Chrome(service=service, options=options)
+    #隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
+    driver.implicitly_wait(10)
     #檢查網頁是否連線正常
     response = requests.get(E_FLOW_ip, timeout=10)
     if response.status_code != 200:
@@ -119,7 +137,7 @@ if __name__ == "__main__":
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_ToApplyHour1").send_keys("19")
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_ToApplyMinute1").send_keys("0")
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_RealApplyTotal1").send_keys("1")
-    driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_Reason1").send_keys(REASON_FOR_OVERTIME)
+    driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_Reason1").send_keys(args.reason)
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_IsSupplyLeave1_No").click()
 
     #點選送出
