@@ -60,6 +60,7 @@ driver.implicitly_wait(10)
 cf=configparser.ConfigParser()
 cf.read_file(open('config.ini', 'r', encoding='UTF-8'))
 E_FLOW_ip = cf.get("APP_Info","E_FLOW_ip")
+REASON_FOR_OVERTIME = cf.get("APP_Info","Reason_for_overtime")
 
 #獲取使用者資料
 
@@ -98,8 +99,8 @@ if __name__ == "__main__":
     
     #登入
     WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
-    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys("填寫帳號")
-    driver.find_element(By.CSS_SELECTOR,"input#Password").send_keys("填寫密碼")
+    driver.find_element(By.CSS_SELECTOR,"input#username").send_keys("帳號")
+    driver.find_element(By.CSS_SELECTOR,"input#Password").send_keys("密碼")
     driver.find_element(By.CSS_SELECTOR,"button.btn.btn-default").click()
     sleep(3)
     #開始填寫今天資料
@@ -118,9 +119,9 @@ if __name__ == "__main__":
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_ToApplyHour1").send_keys("19")
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_ToApplyMinute1").send_keys("0")
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_RealApplyTotal1").send_keys("1")
-    driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_Reason1").send_keys("k8s project")
+    driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_Reason1").send_keys(REASON_FOR_OVERTIME)
     driver.find_element(By.CSS_SELECTOR,"input#ContentPlaceHolder1_ctlForm_IsSupplyLeave1_No").click()
-    
+
     #點選送出
     WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#ContentPlaceHolder1_UcSign1_btnSend"))).click()
     
