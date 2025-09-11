@@ -332,6 +332,13 @@ def create_args() -> dict:
         help="輸入想要的Storage Class,不輸入則使用系統預設值 (default: Default)"
     )
     parser.add_argument(
+        "--StorageSize",
+        type=str,
+        default="Default",
+        metavar="1024",
+        help="輸入想要的Storage Size(單位:GB),不輸入則使用系統預設值 (default: Default)"
+    )
+    parser.add_argument(
         "--OTHER_USR",
         type=str,
         default="None",
@@ -465,6 +472,15 @@ if __name__ == "__main__":
     #修改要使用的Chart Server
     if args_2.SELECT_CHART != "None":
         DEFAULT_CHART = args_2.SELECT_CHART
+
+    #確認StorageSize參數是否都為整數
+    if args_2.StorageSize != "Default":
+        args_2.StorageSize = args_2.StorageSize.replace(" ","")
+        for item in args_2.StorageSize:
+            if ord(item) < 48 or ord(item) > 57:
+                logging_config.info(f"StorageSize, {args_2.StorageSize}, is not integer")
+                logging_config.info("===========================StorageSize Error End===========================")
+                sys.exit(1)
     #啟動chrome
     driver = webdriver.Chrome(service=service, options=options)
     #隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
@@ -580,6 +596,16 @@ if __name__ == "__main__":
         except KeyError:
             pass
 
+    #檢查是否要設定Storage Size,如果沒有則移除相關參數Storage Size
+    for item in list(test_dict["Storage"].keys()):
+        if item.find("Storage Size") >= 0 or item.find("PVC Size") >= 0:
+            if args_2.StorageSize != "Default":
+                logging_config.info(f"Find Storage Size, {item}, will set {args_2.StorageSize}Gi")
+                test_dict["Storage"][item] = args_2.StorageSize + "Gi"
+            else:
+                logging_config.info(f"Find Storage Size, {item}, will be removed")
+                test_dict["Storage"].pop(item)
+
 
     #獲取csv資料
     csv_data_dict['App Name'] = args_2.app_name
@@ -693,6 +719,8 @@ if __name__ == "__main__":
     #預先創建PVC,解決在安裝App時,創建PVC無法讀取到的問題
     PVC_QUEUE = {}
     while test_dict.get("Storage",False):
+        #當前App軍可以自主建立PVC
+        break
         for json_option in list(test_dict['Storage'].keys()):
             #兩種狀況,Storage Class或者要創建PVC
             if not str(json_option).startswith("StorageClass"):
