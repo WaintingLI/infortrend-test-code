@@ -4,7 +4,8 @@
 		"Use Default Storage Class":{
 			"StorageClass for Database - Data":"",
 			"StorageClass for Database - Config":""
-		}
+		},
+        "Database Storage Size - Data":""
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",

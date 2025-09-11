@@ -3,7 +3,8 @@
     "Storage":{
 		"Use Default Storage Class":{
 			"StorageClass for Database":""
-		}
+		},
+        "Database Storage Size":""
 	},
     "Service":{
         "App Image Service Type *":"LoadBalancer",
