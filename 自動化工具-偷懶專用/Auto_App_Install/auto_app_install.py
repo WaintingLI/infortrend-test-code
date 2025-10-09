@@ -610,8 +610,22 @@ if __name__ == "__main__":
     #獲取csv資料
     csv_data_dict['App Name'] = args_2.app_name
     csv_data_dict['Name Space'] = args_2.name_space
-    csv_data_dict['Service type'] = test_dict["Service"].get("App Image Service Type *","None")
     csv_data_dict['IP'] = "None"
+    ##因為Service Type的Key不一定是App Image Service Type *,所以要再檢查是否含有Service Type或者Ingress的字樣
+    if test_dict["Service"].get("App Image Service Type *","None") == "None":
+        get_key = ""
+        for key_item in test_dict["Service"].keys():
+            if key_item.rfind("Service Type") > -1:
+                csv_data_dict['Service type'] = test_dict["Service"].get(key_item,"None")
+                break
+            elif key_item.rfind("Ingress") > -1:
+                csv_data_dict['Service type'] = "Ingress"
+                break
+        else:
+            csv_data_dict['Service type'] = "None"
+    else:
+        csv_data_dict['Service type'] = test_dict["Service"].get("App Image Service Type *","None")
+
     #開啟網址
     driver.get(RANCHER_ip)
     #登入
