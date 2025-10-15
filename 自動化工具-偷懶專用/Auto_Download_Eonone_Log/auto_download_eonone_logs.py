@@ -6,6 +6,7 @@ import sys
 import os
 import configparser
 import shutil
+#import traceback
 from argparse import ArgumentParser
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -13,15 +14,15 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+#from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
+#from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import ElementNotInteractableException
 from selenium.common.exceptions import ElementClickInterceptedException
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.remote.webdriver import WebElement
+#from selenium.webdriver.remote.webdriver import WebDriver
+#from selenium.webdriver.remote.webdriver import WebElement
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import Select
+#from selenium.webdriver.support.ui import Select
 
 
 
@@ -33,6 +34,10 @@ if os.path.dirname(sys.argv[0]):
 
 #引用外部指令
 def create_args():
+    """用來對應輸入的arg
+    Returns:
+        _type_: _description_
+    """
     parser = ArgumentParser(description="Eonone download logs")
     parser.add_argument(
         "--ip",
@@ -83,7 +88,8 @@ options.add_argument('--start-maximized')
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 BINARY_LOCATION='C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-win64/chrome.exe'
 options.binary_location=BINARY_LOCATION
-service = Service(executable_path="C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chromedriver-win64/chromedriver.exe")
+service = Service(
+    executable_path="C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chromedriver-win64/chromedriver.exe")
 #下載位置
 options.add_experimental_option('prefs', {
     'download.default_directory': DOWNLOAD_DIR,
@@ -91,7 +97,9 @@ options.add_experimental_option('prefs', {
     'download.directory_upgrade': True,
     'safebrowsing.enabled': False
 })
-#options.add_experimental_option('prefs', {'download.default_directory': 'C:/Users/waiting.lee/Desktop/Auto Tools/Auto_Download_Eonone_Log/test_download'})
+#options.add_experimental_option('prefs',
+# {'download.default_directory':
+# 'C:/Users/waiting.lee/Desktop/Auto Tools/Auto_Download_Eonone_Log/test_download'})
 
 #讀取檔案參數與全域變數
 cf=configparser.ConfigParser()
@@ -117,13 +125,17 @@ if __name__ == "__main__":
     #登入
     print("EONONE_IP=",EONONE_IP)
     driver.get(EONONE_IP)
-    #WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input[name=\"j_password\"]")))
     while True:
-        WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input[name=\"j_password\"]")))
-        driver.find_element(By.CSS_SELECTOR,"input[name=\"j_username\"]").send_keys(Keys.CONTROL+"a")
+        WebDriverWait(driver,10).until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR,"input[name=\"j_password\"]")))
+        driver.find_element(By.CSS_SELECTOR,
+                            "input[name=\"j_username\"]"
+                            ).send_keys(Keys.CONTROL+"a")
         driver.find_element(By.CSS_SELECTOR,"input[name=\"j_username\"]").send_keys(Keys.DELETE)
         driver.find_element(By.CSS_SELECTOR,"input[name=\"j_username\"]").send_keys(ADMIN_USERNAME)
-        driver.find_element(By.CSS_SELECTOR,"input[name=\"j_password\"]").send_keys(Keys.CONTROL+"a")
+        driver.find_element(By.CSS_SELECTOR,
+                            "input[name=\"j_password\"]"
+                            ).send_keys(Keys.CONTROL+"a")
         driver.find_element(By.CSS_SELECTOR,"input[name=\"j_password\"]").send_keys(Keys.DELETE)
         driver.find_element(By.CSS_SELECTOR,"input[name=\"j_password\"]").send_keys(ADMIN_PASSWORD)
         sleep(1)
@@ -139,7 +151,8 @@ if __name__ == "__main__":
             break
 
     #點選Node
-    driver.find_element(By.CSS_SELECTOR,"div[ctagname=\"nodes\"] > p.ng-star-inserted > span").click()
+    ##備註,由於Node為第一個找到的元素,所以直接改成find_element而不是find_elements
+    driver.find_element(By.CSS_SELECTOR,"div.item-container").click()
     #點選完後,會看到Node
     node_list = driver.find_elements(By.CSS_SELECTOR,"div.listItem.ng-star-inserted")
     while not node_list:
@@ -148,22 +161,20 @@ if __name__ == "__main__":
         sleep(1)
     for item in node_list:
         #獲取當前Node名稱
-        ##div.listItem.ng-star-inserted> div.flex_leftTop.ng-star-inserted > div.flexItem > div:nth-child(1)
-        #item.find_element(By.CSS_SELECTOR,"div.flex_leftTop.ng-star-inserted > div.flexItem > div:nth-child(1)")
-        GET_NODE_NAME = item.find_element(By.CSS_SELECTOR,"div > div.flexItem > div:nth-child(1) > div").text
+        GET_NODE_NAME = item.find_element(By.CSS_SELECTOR,"div > div.flexItem >\
+            div:nth-child(1) > div").text
         print("Node Name:",GET_NODE_NAME)
         #檢查是否有該名稱的資料夾路徑
         if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME):
             os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME)
         item.click()
-        item.find_element(By.CSS_SELECTOR,"div > div > div:nth-child(3) > ift-dropdown-button > div > button").click()
-        element = "div.locRalative.open > ul.dropdown-menu.dropdown-menu-right > li:nth-child(4)"
-        #WebDriverWait(driver,int(10)).until(EC.visibility_of_element_located((By.CSS_SELECTOR,element)))
-        #driver.execute_script("arguments[0].scrollIntoView();", element)
-        get_location = driver.find_element(By.CSS_SELECTOR,element).location_once_scrolled_into_view
+        item.find_element(By.CSS_SELECTOR,"div > div > div:nth-child(3) >\
+            ift-dropdown-button > div > button").click()
+        ELEMENT = "div.locRalative.open > ul.dropdown-menu.dropdown-menu-right > li:nth-child(4)"
+        get_location = driver.find_element(By.CSS_SELECTOR,ELEMENT).location_once_scrolled_into_view
         while True:
             try:
-                click_item = driver.find_element(By.CSS_SELECTOR,element)
+                click_item = driver.find_element(By.CSS_SELECTOR,ELEMENT)
                 ActionChains(driver).move_to_element(click_item).perform()
                 #driver.find_element(By.CSS_SELECTOR,element).click()
                 click_item.click()
@@ -172,40 +183,50 @@ if __name__ == "__main__":
                 print("不可以點")
             except ElementClickInterceptedException:
                 print("有異物")
-                
-                
+
+
         #item.find_element(By.CSS_SELECTOR,"button").click()
         #跳出診斷頁面
-        list_diagnost = driver.find_elements(By.CSS_SELECTOR,"div#csNodeDiagnostic > ift-dialog-content > mat-dialog-content > div > ift-layer-section > div > div:nth-child(3) > ift-layer-block > div > div > ift-layer-basic")
+        list_diagnost = driver.find_elements(By.CSS_SELECTOR,"div#csNodeDiagnostic > \
+            ift-dialog-content > mat-dialog-content > div > ift-layer-section > div >\
+            div:nth-child(3) > ift-layer-block > div > div > ift-layer-basic")
         for i,item_2 in enumerate(list_diagnost):
             #print("i=",i)
             OUT_DIR = ""
+            OUT_DIR_LIST = []
             if i == 0:
                 if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "DiagnosticLog"):
                     os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "DiagnosticLog")
                     OUT_DIR = "DiagnosticLog"
+                    OUT_DIR_LIST.append(OUT_DIR)
             elif i == 1:
                 if not os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "NodeCoreDump"):
                     os.makedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + "NodeCoreDump")
                     OUT_DIR = "NodeCoreDump"
+                    OUT_DIR_LIST.append(OUT_DIR)
             print("Creating =>", OUT_DIR, " <= Data!!!")
             item_2.find_element(By.CSS_SELECTOR,"div > button").click()
             #當下在完成後,會跳出資訊"操作完成"的訊息
             while True:
                 try:
-                    driver.find_element(By.CSS_SELECTOR,"div#infodialog > ift-dialog-footer-default > footer > ift-primary-solid-button > div > button").click()
+                    driver.find_element(By.CSS_SELECTOR,"div#infodialog > \
+                        ift-dialog-footer-default > footer > ift-primary-solid-button >\
+                        div > button").click()
                     break
                 except NoSuchElementException:
                     print("Waiting for Finish...")
                     try:
                         #跳出錯誤訊息
-                        get_message = driver.find_element(By.CSS_SELECTOR,"div#errordialog > ift-dialog-content")
+                        get_message = driver.find_element(By.CSS_SELECTOR,"div#errordialog > \
+                            ift-dialog-content")
                         print(get_message.text)
                         print("**************************************")
                         print(GET_NODE_NAME," won't store ",OUT_DIR)
                         print("**************************************")
                         #關閉錯誤訊息
-                        driver.find_element(By.CSS_SELECTOR,"div#errordialog > ift-dialog-footer-default > footer > ift-primary-solid-button > div > button").click()
+                        driver.find_element(By.CSS_SELECTOR,"div#errordialog > \
+                                            ift-dialog-footer-default > footer > \
+                                            ift-primary-solid-button > div > button").click()
                         #print("item=>",item)
                     except NoSuchElementException:
                         pass
@@ -250,15 +271,32 @@ if __name__ == "__main__":
                     #    ";","st_mtime",file_status.st_mtime,
                     #    ";","st_ctime",file_status.st_ctime
                     #    )
-                    shutil.move(BASE_PATH + file, BASE_PATH + GET_NODE_NAME + "/" + OUT_DIR)
+                    try:
+                        while True:
+                            shutil.move(BASE_PATH + file, BASE_PATH + GET_NODE_NAME + "/" + OUT_DIR)
+                            break
+                    except PermissionError:
+                        pass
+                        #traceback.print_exc()
+                        #print("Retry... move")
+
 
         #關閉診斷資訊
-        ELEMENT_ITEM = "div#csNodeDiagnostic > ift-dialog-footer-default > footer > ift-primary-solid-button > div > button"
+        ELEMENT_ITEM = "div#csNodeDiagnostic > ift-dialog-footer-default > footer \
+            > ift-primary-solid-button > div > button"
         try:
             driver.find_element(By.CSS_SELECTOR,ELEMENT_ITEM).click()
         except NoSuchElementException:
             print("Not Found Diagnostic UI, Will execute the next step")
         sleep(10)
+        #檢查資料夾是否為空,如果為空,則刪除該資料夾
+        for dirs in OUT_DIR_LIST:
+            if  os.path.exists(TMP_STORE_PATH + "/" + GET_NODE_NAME + "/" + dirs):
+                break
+        else:
+            print("Not Found directory below \"",OUT_DIR_LIST,"\""," Under the file-",GET_NODE_NAME)
+            print(GET_NODE_NAME," Will Remove")
+            os.removedirs(TMP_STORE_PATH + "/" + GET_NODE_NAME)
     COUNT_DOWN = 10
     for i in range(COUNT_DOWN):
         print(f"{COUNT_DOWN-i-1} s")
