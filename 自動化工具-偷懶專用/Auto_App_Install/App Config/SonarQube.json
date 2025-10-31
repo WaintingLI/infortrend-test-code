@@ -2,7 +2,7 @@
     "General":{},
     "Storage":{
 		"Use Default Storage Class":{
-            "SonarQube Data Storage Size *":"",
+            "StorageClass for for SonarQube Data":"",
 			"StorageClass for PostgreSQL Data":"",
 			"StorageClass for PostgreSQL Config":""
 		}
