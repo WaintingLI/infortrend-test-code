@@ -1,8 +1,8 @@
 {
     "General":{},
     "Storage":{
-		"PVC for SonarQube *":"sonarqube-pvc",
 		"Use Default Storage Class":{
+            "SonarQube Data Storage Size *":"",
 			"StorageClass for PostgreSQL Data":"",
 			"StorageClass for PostgreSQL Config":""
 		}
