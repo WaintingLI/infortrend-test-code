@@ -2,8 +2,8 @@
     "General":{},
     "Storage":{
 		"Use Default Storage Class":{
-			"StorageClass for Database":"",
-			"StorageClass for Log":""
+			"StorageClass for MongoDB Config Server":"",
+			"StorageClass for MongoDB Shard":""
 		}
 	},
     "Service":{
