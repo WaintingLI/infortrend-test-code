@@ -5,6 +5,7 @@ from time import sleep
 import sys
 import os
 import configparser
+from argparse import ArgumentParser
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
@@ -38,16 +39,14 @@ options.add_experimental_option('excludeSwitches', ['enable-logging'])
 #driver_location='/usr/bin/chromedriver'
 #指令Chromedriver位置
 #BINARY_LOCATION='./chrome-win64/chrome.exe'
-#options.binary_location=BINARY_LOCATION
+BINARY_LOCATION ='C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-win64/chrome.exe'
+options.binary_location=BINARY_LOCATION
 #driver=webdriver.Chrome(executable_path=driver_location,chrome_options=options)
 #js="window.open('{}','_blank');"
-service = Service(executable_path="./chromedriver.exe")
+service = Service(executable_path="C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chromedriver-win64/chromedriver.exe")
 
 
-#啟動chrome
-driver = webdriver.Chrome(service=service, options=options)
-#隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
-driver.implicitly_wait(10)
+
 
 #讀取檔案參數與全域變數
 cf=configparser.ConfigParser()
@@ -65,7 +64,28 @@ USER1_PASSWORD = cf.get("User1","Password")
 #用來判斷說是否已經有第一個帳戶
 ALREADY_HAVE_FIRST_ACCOUNT_FLAG = False
 
-
+def create_args():
+    '''將CommandLine的參數帶入,如果設定參數則自動設定預設值'''
+    parser = ArgumentParser(description="FocalBoard Example")
+    parser.add_argument(
+        "--ip",
+        type=str,
+        default="Default",
+        metavar="N",
+        help="input ipv4 (Default: Used config.ini)",
+    )
+    parser.add_argument(
+        "--port",
+        type=str,
+        default="80",
+        metavar="N",
+        help="input ip port (Default: 80)",
+    )
+    parser_arguments = parser.parse_args()
+    print("Arguments:")
+    for arg in vars(parser_arguments):
+        print(f"  {arg}: {getattr(parser_arguments, arg)}")
+    return parser_arguments
 
 
 def click_button(a):
@@ -289,6 +309,16 @@ def delet_all_board() -> None:
 
 
 if __name__ == "__main__":
+    args = create_args()
+    #啟動chrome
+    driver = webdriver.Chrome(service=service, options=options)
+    #隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
+    driver.implicitly_wait(10)
+
+    if args.ip != "Default":
+        FOCALBOARD_IP = "http://" + args.ip.replace(" ","") + ":" + args.port + "/"
+        print("FOCALBOARD_IP CHANGE TO =>",FOCALBOARD_IP)
+
     #檢查網頁是否連線正常
     response = requests.get(FOCALBOARD_IP, timeout=10)
     if response.status_code != 200:
