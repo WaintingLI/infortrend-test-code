@@ -239,7 +239,7 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
                                 print_string = print_string + get_str_list[number]
                             namespace_item.find_element(By.CSS_SELECTOR,"div > input").send_keys(app_pvc_name+"-"+print_string)
                             return_pvc_name = app_pvc_name+"-"+print_string
-                    #Waiting_test
+
                     if pvc_storageclass != "Default":
                         #section#volumeclaim > div > div > div > div > div > div.labeled-select
                         driver.find_element(By.CSS_SELECTOR,"section#volumeclaim > div > div > div > div > div > div.labeled-select").click()
@@ -251,7 +251,6 @@ def create_pvc(select_name_space:str="test-for-balancer",app_pvc_name:str="test"
                             if pvc_storageclass == item.text:
                                 item.click()
                                 break
-                    #Waiting_test
                     #PVC Create下面的功能設定(Volume Claim, Customize, Labels & Annotations)
                     get_pvc_create_options = driver.find_elements(By.CSS_SELECTOR,"ul.tabs.vertical > li > a > span")
                     for option in get_pvc_create_options:
@@ -526,7 +525,6 @@ if __name__ == "__main__":
         logging_config.info("結束該App的安裝")
         driver.close()
         sys.exit(0)
-
     #獲取該App的Config,並且依照Argument來修改參數
     test_dict = {}
     with open(get_file_path,"r",encoding="utf-8") as f:
@@ -548,7 +546,6 @@ if __name__ == "__main__":
         #刪除LoadBalancer的IP設定
         if test_dict["Service"]["MinIO Web Service Type *"] != "LoadBalancer":
             test_dict["Service"].pop("Static Virtual IP for MinIO *",None)
-
     #是否要指定Storage Class,並且檢查Storage設定是否有誤
     if args_2.StorageClass != "Default":
         #整理StorageClass參數,必定為local,local-delay-bind,local-replica2,local-replica2-delay-bind,local-replica3,local-replica3-delay-bind
@@ -570,9 +567,8 @@ if __name__ == "__main__":
             if args_2.StorageClass == get_default_storageclass[0]:
                 logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass[0]}, StorageClass 更改為\"Default\"")
                 args_2.StorageClass = "Default"
-
         try:
-            if args_2.app_name != "Jenkins" and args_2.app_name != "MinIO" and args_2.StorageClass != "Default":
+            if args_2.app_name != "Jenkins" and args_2.StorageClass != "Default":
                 test_dict["Storage"].update(test_dict["Storage"].pop("Use Default Storage Class"))
             else:
                 #如果不需要指定StorageClass則移除該參數
@@ -703,7 +699,17 @@ if __name__ == "__main__":
         except NoSuchElementException:
             #可能已經登入
             pass
-
+        #檢查是否有該使用者,如果沒有則會顯示錯誤訊息,並且關閉該流程
+        try:
+            WebDriverWait(driver,3).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.login-messages > div.banner.error")))
+            get_error_msg = driver.find_element(By.CSS_SELECTOR,"div.login-messages > div.banner.error").text
+            logging_config.info(f"Log in fail => {get_error_msg}")
+            driver.close()
+            sys.exit(0)
+        except TimeoutException:
+            pass
+        except NoSuchElementException:
+            pass
         #將Project id 固定為"Only User Namespaces"
         try:
             WebDriverWait(driver,300).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"div.ns-filter > div > div")))
@@ -835,7 +841,6 @@ if __name__ == "__main__":
         set_pvc_flag = True
         driver.find_element(By.CSS_SELECTOR,"li#Storage > a").click()
         logging_config.info("在Storage")
-        #Waiting_test
         if args_2.StorageClass != "Default" and args_2.app_name != "Jenkins":
             default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
             try:
@@ -849,7 +854,6 @@ if __name__ == "__main__":
             while default_storage_class_button.get_attribute("aria-checked"):
                 default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
                 print("點完後=>",default_storage_class_button.get_attribute("aria-checked"))
-        #Waiting_test
         get_options = driver.find_elements(By.CSS_SELECTOR,"section#Storage >  div > div > div > div > div > div ")
         for i, item in enumerate(get_options):
             try:
