@@ -3,7 +3,7 @@ import paramiko
 import datetime
 
 
-def Get_kubectl_ip(Connect_ip:str='172.24.128.111') -> list:
+def Get_kubectl_ip(Connect_ip:str='172.24.128.111',Ip_mask:str='172.24.128') -> list:
     """_summary_
     用來獲取k8s底層所使用的IP
     Args:
@@ -17,11 +17,11 @@ def Get_kubectl_ip(Connect_ip:str='172.24.128.111') -> list:
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     #ssh.connect(hostname='HOST_NAME', username="USER_NAME", password="PASSWORD")
-    ssh.connect(hostname=Connect_ip, username="root", password="ABcd_1234")
+    ssh.connect(hostname=Connect_ip, username="root", password="admin")
     
     #stdin, stdout, stderr = ssh.exec_command('ls -l')
     #stdin, stdout, stderr = ssh.exec_command('timeout 10s tcpdump -c 100  -i trunk_6_ dst 172.24.128.140 and dst port 3306')
-    stdin, stdout, stderr = ssh.exec_command('kubectl get service --all-namespaces | grep "172.24.128."  | awk \'{print $5}\'')
+    stdin, stdout, stderr = ssh.exec_command('kubectl get service --all-namespaces | grep "' + f"{Ip_mask}"  +'"  | awk \'{print $5}\'')
     #stdin, stdout, stderr = ssh.exec_command('kubectl get service --all-namespaces | grep "172.24.128."  | awk \'{print $5}\'')
     #sftp = ssh.open_sftp()
     #localpath = 'srcFile.txt'

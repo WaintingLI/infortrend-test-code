@@ -12,6 +12,7 @@ START_IP = 160
 IP_DATA = "172.24.128."
 HOLD_STRING = ""
 SET_SSH_CONNECT_IP = '172.24.128.151'
+SUBNET_MASK = '255.255.252.0'
 #get_ip_list = test_ssh_connect_system.Get_kubectl_ip('172.24.128.111')
 
 def create_args():
@@ -38,6 +39,13 @@ def create_args():
         metavar="ssh host",
         help="one of k8s-clustered nodes ip (default: \"172.24.128.151\")",
     )
+    parser.add_argument(
+        "--mask",
+        type=str,
+        default=SUBNET_MASK,
+        metavar="xxx.xxx.xxx.xxx.xxx",
+        help=f"one of k8s-clustered subnet mask (default: \"{SUBNET_MASK}\")",
+    )
     parser_arguments = parser.parse_args()
     print("Arguments:")
     for arg in vars(parser_arguments):
@@ -51,7 +59,7 @@ if __name__ == "__main__":
     get_args_ip = ""
     get_args_ip = args.ip
     SET_SSH_CONNECT_IP = args.ssh_ip
-    ip_data_check = args.ip + "." + args.ssh_ip
+    ip_data_check = args.ip + "." + args.ssh_ip + "." + args.mask
     #檢查ip是否可以使用
     ##檢查字元是否為0~9、.
     for character in ip_data_check:
@@ -78,8 +86,18 @@ if __name__ == "__main__":
     START_IP = int(get_args_ip.split(".")[3])
     #print("IP_DATA =",IP_DATA)
     #print("START_IP =",START_IP)
-
-    get_ip_list = test_ssh_connect_system.Get_kubectl_ip(SET_SSH_CONNECT_IP)
+    
+    #獲取MASK IP
+    ARRAY_COUNTER = 0
+    GET_MASK_IP = ""
+    for item in args.mask.split("."):
+        if item != "255":
+            break
+        ARRAY_COUNTER = ARRAY_COUNTER + 1
+    GET_MASK_IP = args.ip.split(".")[0]
+    for number in range(1,ARRAY_COUNTER):
+        GET_MASK_IP = GET_MASK_IP + "." + args.ip.split(".")[number]
+    get_ip_list = test_ssh_connect_system.Get_kubectl_ip(SET_SSH_CONNECT_IP,GET_MASK_IP)
     print_list = []
     for i in range(0,args.range):
         GET_NUMBER = START_IP + i
