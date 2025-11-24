@@ -71,6 +71,8 @@ RANCHER_ip = cf.get("Eonkube_Info","Rancher_ip")
 ADMIN_USERNAME = cf.get("Eonkube_Info","Admin_Username")
 ADMIN_PASSWORD = cf.get("Eonkube_Info","Admin_Password")
 DEFAULT_CHART = cf.get("Charts_Info","Default_chart",fallback="All")
+CLUSTER_IP_START = cf.get("Cluster_Info","Avaible_IP_Start")
+CLUSTER_IP_END = cf.get("Cluster_Info","Avaible_IP_End")
 
 
 def export_csv_file(get_dict_data:dict) -> None:
@@ -372,6 +374,13 @@ def create_args() -> dict:
         metavar="xxxxx",
         help="輸入想要使用的Chart Server (default: None)"
     )
+    parser.add_argument(
+        "--FORCE_IP",
+        type=str,
+        default="None",
+        metavar="X.X.X.X",
+        help="輸入想要指定的IP (default: None)"
+    )
     args = parser.parse_args()
     logging_config.info("Arguments:")
     for arg in vars(args):
@@ -480,6 +489,44 @@ if __name__ == "__main__":
                 logging_config.info(f"StorageSize, {args_2.StorageSize}, is not integer")
                 logging_config.info("===========================StorageSize Error End===========================")
                 sys.exit(1)
+
+
+    #檢查FORCE IP 是否符合IPv4規範且符合Cluster IP 範圍,並且設定FORCE_IP旗標
+    SET_FORCE_IP_FLAG = False
+    if args_2.FORCE_IP != "None":
+        args_2.FORCE_IP = args_2.FORCE_IP.replace(" ","")
+        ip_data_check = args_2.FORCE_IP
+        ##檢查字元是否為0~9
+        for character in ip_data_check:
+            if 48 <= ord(character) <=57 or ord(character) == 46:
+                pass
+            else:
+                print("FORCE IP 有輸入錯誤")
+                sys.exit(0)
+        ##檢查ip是否超過255
+        for item in ip_data_check.split("."):
+            if int(item) > 255:
+                print("FORCE IP 大小錯誤")
+                sys.exit(0)
+        ##檢查ip是否為ip v4
+        if len(ip_data_check.split(".")) % 4 != 0:
+            print(len(ip_data_check.split(".")))
+            print("非IPv4 IP")
+            sys.exit(0)
+        ##檢查是否為Cluster IP指定範圍的IPv4
+        CLUSTER_IP_START = CLUSTER_IP_START.replace(" ","")
+        CLUSTER_IP_END = CLUSTER_IP_END.replace(" ","")
+        C_I_S = CLUSTER_IP_START.split(".")
+        C_I_E = CLUSTER_IP_END.split(".")
+        F_I = args_2.FORCE_IP.split(".")
+        for i in range(4):
+            if C_I_S[i] != F_I[i]:
+                if int(F_I[i]) >= int(C_I_S[i]) and int(F_I[i]) <= int(C_I_E[i]):
+                    SET_FORCE_IP_FLAG = True
+                else:
+                    logging_config.info(f"FORCE IP, {args_2.FORCE_IP}, is not within IP range of Cluster")
+                    SET_FORCE_IP_FLAG = False
+                    sys.exit(0)
     #啟動chrome
     driver = webdriver.Chrome(service=service, options=options)
     #隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
@@ -599,7 +646,7 @@ if __name__ == "__main__":
                 logging_config.info(f"Find Storage Size, {item}, will set {args_2.StorageSize}Gi")
                 test_dict["Storage"][item] = args_2.StorageSize + "Gi"
             else:
-                logging_config.info(f"Find Storage Size, {item}, will be removed")
+                #logging_config.info(f"Find Storage Size, {item}, will be removed")
                 test_dict["Storage"].pop(item)
 
 
@@ -623,7 +670,14 @@ if __name__ == "__main__":
         csv_data_dict['Service type'] = test_dict["Service"].get("App Image Service Type *","None")
 
     #開啟網址
-    driver.get(RANCHER_ip)
+    while True:
+        try:
+            driver.set_page_load_timeout(60)
+            driver.get(RANCHER_ip)
+            driver.set_page_load_timeout(300)
+            break
+        except TimeoutException:
+            pass
     #登入
     #登入EonKube
     ##OpenLDAP登入-Start
@@ -955,7 +1009,10 @@ if __name__ == "__main__":
                         item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.CONTROL+"a")
                         item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.DELETE)
                         if str(json_option) == "Static Virtual IP *":
-                            get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
+                            if SET_FORCE_IP_FLAG:
+                                get_new_ip = args_2.FORCE_IP
+                            else:
+                                get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
                             while get_new_ip == None:
                                 get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
                                 logging_config.info("==從底層獲取IP失敗,請排除問題==")
@@ -969,7 +1026,10 @@ if __name__ == "__main__":
                                 sys.exit(0)
                             item.find_element(By.CSS_SELECTOR," div > input").send_keys(get_new_ip)
                         elif str(json_option) == "Static Virtual IP for MinIO *":
-                            get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP for MinIO *'])
+                            if SET_FORCE_IP_FLAG:
+                                get_new_ip = args_2.FORCE_IP
+                            else:
+                                get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP for MinIO *'])
                             while get_new_ip == None:
                                 get_new_ip = get_nodes_available_ip.get_available_cluster_ip(test_dict['Service']['Static Virtual IP *'])
                                 logging_config.info("==從底層獲取IP失敗,請排除問題==")
@@ -1087,7 +1147,7 @@ if __name__ == "__main__":
 
     #倒數關閉
     logging_config.info("即將關閉瀏覽器")
-    
+
     #匯出資料
     export_csv_file(csv_data_dict)
     count_down = 10
