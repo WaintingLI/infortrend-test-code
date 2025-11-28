@@ -981,6 +981,10 @@ if __name__ == "__main__":
                         else:
                             set_pvc_flag = False
                             logging_config.info(f"PVC Not Found={GET_PVC_NAME}")
+                            logging_config.info("The procedure will terminate")
+                            logging_config.info("========================TERMINATED========================")
+                            driver.close()
+                            sys.exit(0)
                         logging_config.debug(f"{json_option}--END")
         if set_pvc_flag:
             break
