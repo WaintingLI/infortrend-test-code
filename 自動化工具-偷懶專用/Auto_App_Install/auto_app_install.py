@@ -48,9 +48,9 @@ options.add_argument('--start-maximized')
 #options.add_argument('window-size=1600x900')
 #options.add_experimental_option('excludeSwitches', ['enable-automation'])
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-options.add_argument("--headless")
-options.add_argument("--disable-gpu")
-options.add_argument('--no-sandbox')
+#options.add_argument("--headless")
+#options.add_argument("--disable-gpu")
+#options.add_argument('--no-sandbox')
 
 #driver_location='/usr/bin/chromedriver'
 #指令Chromedriver位置
@@ -1122,12 +1122,26 @@ if __name__ == "__main__":
                 logging_config.info(test_dict['APP setting'][str(json_option)])
                 if item.find_element(By.CSS_SELECTOR,"label").text == str(json_option):
                     try:
-                        item.find_element(By.CSS_SELECTOR," div > input"
-                                          ).send_keys(Keys.CONTROL+"a")
-                        item.find_element(By.CSS_SELECTOR," div > input"
-                                          ).send_keys(Keys.DELETE)
-                        item.find_element(By.CSS_SELECTOR," div > input"
-                                          ).send_keys(test_dict['APP setting'][str(json_option)])
+                        #WAINTING_TEST
+                        if args_2.app_name == "Kibana" or args_2.app_name == "Logstash":
+                            get_string = item.find_element(By.CSS_SELECTOR," div > input").get_attribute("value")
+                            will_send_cmd = "helm list -n " + args_2.name_space + " | grep elasticsearch | " + "awk \'{print $1}\'"
+                            get_response = communicate_to_machine.all_node_to_connect_k8s(will_send_cmd)
+                            new_string = get_string[0:get_string.find("elasticsearch-master")] + str(get_response[0]).replace(" ","")+ "-" + get_string[get_string.find("elasticsearch-master"):len(get_string)]
+                            if not get_response[0]:
+                                logging_config.info(f"Elasticsearch name Not Found => {get_response}")
+                                driver.close()
+                                sys.exit(0)
+                            item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.CONTROL+"a")
+                            item.find_element(By.CSS_SELECTOR," div > input").send_keys(Keys.DELETE)
+                            item.find_element(By.CSS_SELECTOR," div > input").send_keys(new_string)
+                        else:
+                            item.find_element(By.CSS_SELECTOR," div > input"
+                                            ).send_keys(Keys.CONTROL+"a")
+                            item.find_element(By.CSS_SELECTOR," div > input"
+                                            ).send_keys(Keys.DELETE)
+                            item.find_element(By.CSS_SELECTOR," div > input"
+                                            ).send_keys(test_dict['APP setting'][str(json_option)])
                     except NoSuchElementException as e:
                         logging_config.debug(e.msg)
                         logging_config.info(json_option)
@@ -1144,7 +1158,7 @@ if __name__ == "__main__":
 
 
     #安裝App
-    driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
+    #WAINTING_TEST_MASK driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
 
     #確認App是否安裝了,在嘗試確認100次後,都沒有就不會自動關閉瀏覽器
     for i in range(100):
