@@ -1,6 +1,11 @@
 {
     "General":{},
     "Storage":{
+        "Milvus etcd Storage Size":"",
+        "Milvus Object Storage Storage Size":"",
+        "Pulsar Zookeeper Storage Size":"",
+        "Pulsar Bookkeeper Journal Storage Size":"",
+        "Pulsar Bookkeeper Ledgers Storage Size":"",
 		"Use Default Storage Class":{
 			"StorageClass for Milvus etcd":"",
 			"StorageClass for Milvus Object Storage":"",
@@ -13,5 +18,8 @@
         "App Image Service Type *":"LoadBalancer",
 		"Static Virtual IP *":"172.24.128.165"
     },
-    "APP setting":{}
+    "APP setting":{
+        "Enable Attu (Milvus Web UI) ":true,
+        "Enable Attu (Milvus Web UI) *":"milvus-web-ui-test"
+    }
 }

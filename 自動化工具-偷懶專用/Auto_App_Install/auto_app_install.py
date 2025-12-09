@@ -899,10 +899,11 @@ if __name__ == "__main__":
         set_pvc_flag = True
         try:
             storage_tag = driver.find_element(By.CSS_SELECTOR,"li#Storage > a")
+            storage_tag.click()
         except ElementClickInterceptedException:
             driver.execute_script("arguments[0].scrollIntoView();", storage_tag)
             driver.execute_script("arguments[0].click();",storage_tag)
-        logging_config.info("在Storage")
+        logging_config.info("In Storage tab")
         if args_2.StorageClass != "Default" and args_2.app_name != "Jenkins":
             default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
             try:
@@ -1000,6 +1001,7 @@ if __name__ == "__main__":
     while test_dict.get("Service",False):
         driver.find_element(By.CSS_SELECTOR,"li#Service > a").click()
         get_options = driver.find_elements(By.CSS_SELECTOR,"section#Service >  div > div > div > div > div > div ")
+        logging_config.info("In Service tab")
         #Service相關設定
         for i, item in enumerate(get_options):
             try:
@@ -1102,8 +1104,18 @@ if __name__ == "__main__":
 
     while test_dict.get("APP setting",False):
         driver.find_element(By.CSS_SELECTOR,"li#APP\\ setting > a").click()
-        logging_config.info("APP setting")
-        get_options = driver.find_elements(By.CSS_SELECTOR,"section#APP\\ setting >  div > div > div > div > div > div ")
+        logging_config.info("IN APP setting tab")
+        if args_2.app_name == "Milvus":
+            get_check_flage = False
+            while not get_check_flage:  
+                get_options = driver.find_elements(By.CSS_SELECTOR,"section#APP\\ setting >  div > div > div > div > div > label ")
+                for item in get_options:
+                    if item.text == "Enable Attu (Milvus Web UI)":
+                        item.click()
+                get_check_flage = driver.find_element(By.CSS_SELECTOR,"section#APP\\ setting >  div > div > div > div > div > label > span.checkbox-custom").get_attribute("aria-checked")
+            get_options = driver.find_elements(By.CSS_SELECTOR,"section#APP\\ setting >  div > div > div > div > div")
+        else:
+            get_options = driver.find_elements(By.CSS_SELECTOR,"section#APP\\ setting >  div > div > div > div > div > div ")
         for i, item in enumerate(get_options):
             try:
                 logging_config.info(item.find_element(By.CSS_SELECTOR,"label").text)
@@ -1122,7 +1134,6 @@ if __name__ == "__main__":
                 logging_config.info(test_dict['APP setting'][str(json_option)])
                 if item.find_element(By.CSS_SELECTOR,"label").text == str(json_option):
                     try:
-                        #WAINTING_TEST
                         if args_2.app_name == "Kibana" or args_2.app_name == "Logstash":
                             get_string = item.find_element(By.CSS_SELECTOR," div > input").get_attribute("value")
                             will_send_cmd = "helm list -n " + args_2.name_space + " | grep elasticsearch | " + "awk \'{print $1}\'"
@@ -1158,7 +1169,7 @@ if __name__ == "__main__":
 
 
     #安裝App
-    #WAINTING_TEST_MASK driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
+    driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
 
     #確認App是否安裝了,在嘗試確認100次後,都沒有就不會自動關閉瀏覽器
     for i in range(100):
