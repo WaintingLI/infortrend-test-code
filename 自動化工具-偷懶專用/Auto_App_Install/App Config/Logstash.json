@@ -10,6 +10,7 @@
 		"Static Virtual IP *":"172.24.128.178"
     },
     "APP setting":{
+        "Elasticsearch Hosts *":"",
         "Logstash Credential Secret *":""
     }
 }
