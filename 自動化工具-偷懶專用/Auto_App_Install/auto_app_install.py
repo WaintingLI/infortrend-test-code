@@ -852,8 +852,14 @@ if __name__ == "__main__":
                 
     #決定Chart
     #driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__actions").click()
-    chart_click = driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__actions")
-    ActionChains(driver).move_to_element(chart_click).click().perform()
+    while True:
+        try:
+            chart_click = driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"] > div.vs__actions")
+            ActionChains(driver).move_to_element(chart_click).click().perform()
+            if driver.find_element(By.CSS_SELECTOR,"div[role=\"combobox\"]").get_attribute("aria-expanded") == "false":
+                break
+        except ElementClickInterceptedException:
+            logging_config.info("Close dropdown list of chart")
     #點選chart中的App
     try:
         WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"main > div > div > div.grid > div:nth-child(1) > h4.name")))
