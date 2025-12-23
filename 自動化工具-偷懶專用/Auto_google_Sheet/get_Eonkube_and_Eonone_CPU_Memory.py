@@ -41,6 +41,8 @@ options.add_experimental_option('excludeSwitches', ['enable-logging'])
 #driver_location='/usr/bin/chromedriver'
 #指令Chromedriver位置
 BINARY_LOCATION='C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-win64/chrome.exe'
+#BINARY_LOCATION='C:/Users/waiting.lee/Desktop/Auto Tools/Chrom_driver_kits/chrome-headless-shell-win64/chrome-headless-shell.exe'
+#備註:使用Headless Shell會一直抓不到CPU的數值
 options.binary_location=BINARY_LOCATION
 #driver=webdriver.Chrome(executable_path=driver_location,chrome_options=options)
 #js="window.open('{}','_blank');"
@@ -88,21 +90,28 @@ if __name__ == "__main__":
         sys.exit(1)
 
     #開啟網址
-    driver.get(EONKUBE_IP)
-    
+    while True:
+        try:
+            driver.set_page_load_timeout(60)
+            driver.get(EONKUBE_IP)
+            driver.set_page_load_timeout(300)
+            break
+        except TimeoutException:
+            print("Browser will reload")
+
     #登入
     try:
         WebDriverWait(driver,30).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"input#username")))
     except TimeoutException:
         #從Active Directory切換到local user
         WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"a#login-useLocal"))).click()
-        
+
     driver.find_element(By.CSS_SELECTOR,"input#username").send_keys(ADMIN_USERNAME)
     driver.find_element(By.CSS_SELECTOR,"input[type=\"password\"]").send_keys(ADMIN_PASSWORD)
     sleep(1)
     driver.find_element(By.CSS_SELECTOR,"button#submit").click()
     sleep(3)
-    
+
     #切回到Node資訊的頁面
     driver.get(EONKUBE_IP)
     WebDriverWait(driver,60).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"table.sortable-table > tbody > tr.main-row")))
@@ -163,13 +172,17 @@ if __name__ == "__main__":
             Eonone_no_login_flag = False
     
     #Get info 
-    WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR,"div.flex_center > div > div.capacity-body-content")))
+    WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR,"div.ng-star-inserted > div.stacked-bar-container > div > div.progressbar-content")))
     Eonone_cluster_list.append("EonOne Monitor\n")
     while True:
-        Cluster_info =driver.find_elements(By.CSS_SELECTOR,"div.flex_center > div > div.capacity-body-content")
+        Cluster_info =driver.find_elements(By.CSS_SELECTOR,"div.ng-star-inserted > div.stacked-bar-container > div > div.progressbar-content")
         Cluster_cpu = Cluster_info[0].text
         Cluster_ram = Cluster_info[1].text
         if Cluster_cpu == "0%" or Cluster_ram == "0%":
+            continue
+        if not Cluster_cpu or not Cluster_ram:
+            print("Cluster_cpu Value =",Cluster_cpu)
+            print("Cluster_ram Value =",Cluster_ram)
             continue
         break
     print("Cluster CPU:", Cluster_cpu)
@@ -186,22 +199,23 @@ if __name__ == "__main__":
     driver.find_element(By.CSS_SELECTOR,"div#sec1rightbox > div:nth-child(6) > ift-link-text > div > a").click()
     #選取韌體版本
     WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR,"tbody > ift-item-info-table-element:nth-child(4) > tr")))
-    get_firmware_version = driver.find_elements(By.CSS_SELECTOR,"tbody > ift-item-info-table-element:nth-child(4) > tr > ift-item-info-table-item")
     get_firmware_version_string = ''
-    print(get_firmware_version[0].text)
-    if get_firmware_version[0].text == "韌體版本":
-        print(get_firmware_version[1].text)
-        get_firmware_version_string = get_firmware_version[1].text
-    else:
-        print("沒有找到韌體資訊")
-        get_firmware_version_string = "沒有找到韌體資訊"
-    
+    while True:
+        get_firmware_version = driver.find_elements(By.CSS_SELECTOR,"tbody > ift-item-info-table-element:nth-child(4) > tr > ift-item-info-table-item")
+        print(get_firmware_version[0].text)
+        if get_firmware_version[0].text == "韌體版本":
+            print(get_firmware_version[1].text)
+            get_firmware_version_string = get_firmware_version[1].text
+            break
+        else:
+            print("沒有找到韌體資訊")
+            get_firmware_version_string = "沒有找到韌體資訊"
+
     #組合文字
     for element in Eonone_cluster_list:
         Input_string = Input_string + element
     for element in Eonkube_node_list:
         Input_string = Input_string + element
-    
     print("即將上傳的資訊")
     print(get_firmware_version_string)
     print(Input_string)
