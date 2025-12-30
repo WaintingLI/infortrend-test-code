@@ -2,8 +2,7 @@
     "General":{},
     "Storage":{
 		"Use Default Storage Class":{
-			"StorageClass for Postgresql Data":"",
-			"StorageClass for Postgresql Config":"",
+			"StorageClass for MySQL":"",
 			"StorageClass for Kafka":"",
             "StorageClass for Zookeeper":"",
             "StorageClass for Elasticsearch":""
