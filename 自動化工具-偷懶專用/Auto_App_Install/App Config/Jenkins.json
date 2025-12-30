@@ -1,11 +1,14 @@
 {
     "General":{},
     "Storage":{
-		"StorageClass for Database *":""
+        "Use Default Storage Class":{
+            "StorageClass for Database":""
+        }
 	},
     "Service":{
-        "App Image Service Type *":"LoadBalancer",
-		"Static Virtual IP *":"172.24.128.175"
+        "Ingress":{
+            "Base URL for Jenkins Services *":"jenkins-test"
+        }
     },
     "APP setting":{}
 }

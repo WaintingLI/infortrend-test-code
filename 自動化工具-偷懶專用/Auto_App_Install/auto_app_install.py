@@ -619,7 +619,7 @@ if __name__ == "__main__":
                 logging_config.info(f"StorageClass 預設設定值為{get_default_storageclass[0]}, StorageClass 更改為\"Default\"")
                 args_2.StorageClass = "Default"
         try:
-            if args_2.app_name != "Jenkins" and args_2.StorageClass != "Default":
+            if args_2.StorageClass != "Default":
                 test_dict["Storage"].update(test_dict["Storage"].pop("Use Default Storage Class"))
             else:
                 #如果不需要指定StorageClass則移除該參數
@@ -910,7 +910,7 @@ if __name__ == "__main__":
             driver.execute_script("arguments[0].scrollIntoView();", storage_tag)
             driver.execute_script("arguments[0].click();",storage_tag)
         logging_config.info("In Storage tab")
-        if args_2.StorageClass != "Default" and args_2.app_name != "Jenkins":
+        if args_2.StorageClass != "Default":
             default_storage_class_button = driver.find_element(By.CSS_SELECTOR,"span[aria-label=\"Use Default Storage Class\"].checkbox-custom")
             try:
                 default_storage_class_button.click()
@@ -1176,6 +1176,7 @@ if __name__ == "__main__":
 
     #安裝App
     driver.find_element(By.CSS_SELECTOR,"div#wizard-footer-controls > div > button.btn.role-primary").click()
+
 
     #確認App是否安裝了,在嘗試確認100次後,都沒有就不會自動關閉瀏覽器
     for i in range(100):
