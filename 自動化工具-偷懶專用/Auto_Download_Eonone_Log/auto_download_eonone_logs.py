@@ -6,7 +6,7 @@ import sys
 import os
 import configparser
 import shutil
-#import traceback
+import traceback
 from argparse import ArgumentParser
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -108,13 +108,7 @@ EONONE_IP = cf.get("Cluster_Info","Eonone_ip")
 ADMIN_USERNAME = cf.get("Cluster_Info","Admin_Username")
 ADMIN_PASSWORD = cf.get("Cluster_Info","Admin_Password")
 
-#取消特定網頁的不安全下載封鎖
-options.add_argument("--unsafely-treat-insecure-origin-as-secure="+EONONE_IP)
 
-#啟動chrome
-driver = webdriver.Chrome(service=service, options=options)
-#隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
-driver.implicitly_wait(10)
 
 
 if __name__ == "__main__":
@@ -122,6 +116,13 @@ if __name__ == "__main__":
     args = create_args()
     if args.ip != "default":
         EONONE_IP = "http://"+ args.ip + ":" + args.port
+        
+    #取消特定網頁的不安全下載封鎖
+    options.add_argument("--unsafely-treat-insecure-origin-as-secure="+EONONE_IP)
+    #啟動chrome
+    driver = webdriver.Chrome(service=service, options=options)
+    #隱式等待，如果沒有找到元素，每0.5秒重新找一次，直到10秒過後
+    driver.implicitly_wait(10)
     #登入
     print("EONONE_IP=",EONONE_IP)
     driver.get(EONONE_IP)
@@ -274,11 +275,12 @@ if __name__ == "__main__":
                     try:
                         while True:
                             shutil.move(BASE_PATH + file, BASE_PATH + GET_NODE_NAME + "/" + OUT_DIR)
-                            break
+                            if not os.path.exists(BASE_PATH + file):
+                                break
                     except PermissionError:
                         pass
-                        #traceback.print_exc()
-                        #print("Retry... move")
+                        traceback.print_exc()
+                        print("Retry... move")
 
 
         #關閉診斷資訊
