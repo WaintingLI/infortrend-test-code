@@ -229,6 +229,7 @@ if __name__ == "__main__":
                                             ift-dialog-footer-default > footer > \
                                             ift-primary-solid-button > div > button").click()
                         #print("item=>",item)
+                        break
                     except NoSuchElementException:
                         pass
                     sleep(5)
