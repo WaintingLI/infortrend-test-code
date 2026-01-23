@@ -3,8 +3,7 @@
     "Storage":{
 		"Use Default Storage Class":{
             "StorageClass for for SonarQube Data":"",
-			"StorageClass for PostgreSQL Data":"",
-			"StorageClass for PostgreSQL Config":""
+			"StorageClass for PostgreSQL Data":""
 		}
 	},
     "Service":{

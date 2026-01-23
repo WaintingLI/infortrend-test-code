@@ -3,8 +3,7 @@
     "Storage":{
 		"Use Default Storage Class":{
             "StorageClass for Redmine Data":"",
-			"StorageClass for Database Data":"",
-			"StorageClass for Database Config":""
+			"StorageClass for Database Data":""
 		}
 	},
     "Service":{

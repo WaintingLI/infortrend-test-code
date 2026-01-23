@@ -2,8 +2,7 @@
     "General":{},
     "Storage":{
 		"Use Default Storage Class":{
-			"StorageClass for Database - Data":"",
-			"StorageClass for Database - Config":""
+			"StorageClass for Database - Data":""
 		},
         "Database Storage Size - Data":""
 	},
